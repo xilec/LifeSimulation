@@ -9,6 +9,7 @@ namespace LifeSimulation
 
         public const int MaxInputs = 12;
         public const int MaxOutputs = 4;
+        public const int TotalWeights = MaxInputs*MaxOutputs;
 
         private Agent()
         {
@@ -40,9 +41,9 @@ namespace LifeSimulation
         public Location Location;
         public Direction Direction;
         public int[] Inputs = new int[MaxInputs];
-        public int[] WeightOI = new int[MaxInputs * MaxOutputs];
+        public int[] WeightOI = new int[TotalWeights];
         public int[] Biaso = new int[MaxOutputs];
-        public int[] Actions = new int[MaxOutputs];
+        public int[] Actions = new int[MaxOutputs];        
 
         public void Eat()
         {
@@ -51,6 +52,28 @@ namespace LifeSimulation
             if (Energy > MaxEnergy)
             {
                 Energy = MaxEnergy;
+            }
+        }
+
+        public void Turn(AgentActions action)
+        {
+            // В зависимости от направления поворота агента вычисляем новое направление движения
+            switch (Direction)
+            {
+                case Direction.North:
+                    Direction = action == AgentActions.TurnLeft ? Direction.West : Direction.East;
+                    break;
+                case Direction.South:
+                    Direction = action == AgentActions.TurnLeft ? Direction.East : Direction.West;
+                    break;
+                case Direction.West:
+                    Direction = action == AgentActions.TurnLeft ? Direction.North : Direction.South;
+                    break;
+                case Direction.East:
+                    Direction = action == AgentActions.TurnLeft ? Direction.South : Direction.North;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

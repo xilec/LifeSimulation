@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace LifeSimulation
 {
     public class Landscape
     {
-        public const int SeedPopulation = 0;
-
         public const int MaxDirection = 4;
-        
+
         public const int HERB_PLANE = 0;
         public const int CARN_PLANE = 1;
         public const int PLANT_PLANE = 2;
@@ -21,32 +19,28 @@ namespace LifeSimulation
         public Agent[] Agents = new Agent[MaxAgents];
         public Agent[] Plants = new Agent[MaxPlants];
 
-        public readonly Dictionary<AgentType, int> AgentTypeCounts;
-        public readonly Dictionary<AgentType, Agent> AgentsMaxAge = new Dictionary<AgentType, Agent>
-        {
-            {AgentType.Herbivore, null},
-            {AgentType.Carnivore, null}
-        };
+        public Statistics Statistics = new Statistics();
+
+        /// <summary>
+        /// Направления движения в координатной сетке
+        /// </summary>
+        /// <remarks>
+        /// Первая координата смещения - y, вторая - x
+        /// </remarks>
+        private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
 
         public Landscape()
         {
-            AgentTypeCounts = new Dictionary<AgentType, int>
-            {
-                {AgentType.Carnivore, 0},
-                {AgentType.Herbivore, 0},
-            };
-
             InitPlants();
 
             InitAgents();
-
         }
 
         private void InitAgents()
         {
             for (int agentCount = 0; agentCount < MaxAgents; agentCount++)
             {
-                var newAgentType = agentCount < (MaxAgents/2) ? AgentType.Herbivore : AgentType.Carnivore;
+                var newAgentType = agentCount < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
                 var newAgent = new Agent(newAgentType);
                 Agents[agentCount] = newAgent;
                 AddAgent(newAgent);
@@ -55,7 +49,7 @@ namespace LifeSimulation
 
         private void AddAgent(Agent agent)
         {
-            AgentTypeCounts[agent.Type]++;
+            Statistics.AgentTypeCounts[agent.Type]++;
             FindEmptySpot(agent);
         }
 
@@ -96,7 +90,7 @@ namespace LifeSimulation
 
                     break;
                 }
-            }            
+            }
         }
 
         private void FindEmptySpot(Agent agent)
@@ -146,16 +140,9 @@ namespace LifeSimulation
         {
             // Помещаем агента в новое место
             var type = (int)agent.Type;
-            _landscape[type][agent.Location.Y, agent.Location.X] = agent;            
+            _landscape[type][agent.Location.Y, agent.Location.X] = agent;
         }
 
-        /// <summary>
-        /// Направления движения в координатной сетке
-        /// </summary>
-        /// <remarks>
-        /// Первая координата смещения - y, вторая - x
-        /// </remarks>
-        private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
         public void Move(Agent agent)
         {
             // Удаляем агента со старого места
@@ -188,5 +175,117 @@ namespace LifeSimulation
 
             return newPosition;
         }
+
+        public bool ChooseObject(int plane, int ax, int ay, int[][] offsets, int neg, out int ox, out int oy)
+        {
+            foreach (var offset in offsets)
+            {
+                var xOffset = Clip(ax + (offset[1] * neg));
+                var yOffset = Clip(ay + (offset[0] * neg));
+
+                // Если объект найден, возвращаем его индекс
+                if (_landscape[plane][yOffset, xOffset] != null)
+                {
+                    ox = xOffset;
+                    oy = yOffset;
+
+                    return true;
+                }
+            }
+
+            ox = -1;
+            oy = -1;
+            return false;
+        }
+
+        public void KillAgent(Agent agent)
+        {
+            // Пришла смерть (или агента съели)
+            Statistics.CheckBestAgent(agent);
+
+            int agentIndex;
+            for (agentIndex = 0; agentIndex < Agents.Length; agentIndex++)
+            {
+                if (Agents[agentIndex] == agent)
+                {
+                    break;
+                }
+            }
+
+            if (agentIndex == Agents.Length)
+            {
+                throw new Exception("Agent no found in list");
+            }
+
+            Agents[agentIndex] = null;
+            RemoveAgent(agent);
+            Statistics.AgentTypeCounts[agent.Type]--;
+        }
+
+        public void ReproduceAgent(Agent agent)
+        {
+            // Не даем агенту одного типа азнять более половины дотупных ячеек
+            if (Statistics.AgentTypeCounts[agent.Type] >= MaxAgents / 2)
+            {
+                return;
+            }
+
+            // Найти пустое место и скопировать агента. При этом происходит мутация одного веса или смещение  в нейронной сети агента
+            var emptyAgentIndex = -1;
+            for (int i = 0; i < Agents.Length; i++)
+            {
+                if (Agents[emptyAgentIndex] == null)
+                {
+                    break;
+                }
+            }
+
+            if (emptyAgentIndex == -1)
+            {
+                return;
+            }
+
+            var child = agent.DeepClone();
+            FindEmptySpot(child);
+
+            if (Helpers.GetSRand() <= 0.2)
+            {
+                child.WeightOI[Helpers.GetRand(Agent.TotalWeights)] = Helpers.GetWeight();
+            }
+
+            child.Generation++;
+            child.Age = 0;
+
+            Statistics.CheckMaxGenAgent(child);
+
+            // Репродукция уменьшает энергию родителя вдвое
+            child.Energy = agent.Energy = Agent.MaxEnergy / 2;
+
+            Statistics.AgentTypeCounts[child.Type]++;
+            Statistics.AgentTypeReproductions[child.Type]++;
+        }
+
+        public void Percept(Agent agent, SensorInputOffsets sensorInputOffset, int[][] offsets, int neg)
+        {
+            var agentLocation = agent.Location;
+            var inputOffset = (int)sensorInputOffset;
+
+            for (int planeIndex = 0; planeIndex < _landscape.Length; planeIndex++)
+            {
+                var plane = _landscape[planeIndex];
+                foreach (var offset in offsets)
+                {
+                    var xoff = Clip(agentLocation.X + (offset[1]*neg));
+                    var yoff = Clip(agentLocation.Y + (offset[0]*neg));
+
+                    // Если в полученной точке что-то есть, то увеличиваем счетчик входов
+                    if (plane[yoff, xoff] != null)
+                    {
+                        agent.Inputs[inputOffset + planeIndex]++;
+                    }
+                }
+            }
+        }
+
     }
 }

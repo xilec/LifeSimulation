@@ -1,6 +1,6 @@
 namespace LifeSimulation
 {
-    public enum SensorInputs
+    public enum SensorInputOffsets
     {
         HERB_FRONT,      //= 0
         CARN_FRONT,      //= 1

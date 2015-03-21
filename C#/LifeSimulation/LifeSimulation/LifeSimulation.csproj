@@ -47,8 +47,9 @@
     <Compile Include="Landscape.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SensorInputs.cs" />
+    <Compile Include="SensorInputOffsets.cs" />
     <Compile Include="Simulation.cs" />
+    <Compile Include="Statistics.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

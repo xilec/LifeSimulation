@@ -46,35 +46,32 @@ namespace LifeSimulation
 
         private void SimulateAgent(Agent agent)
         {
-            var x = agent.Location.X;
-            var y = agent.Location.Y;
-
             // Вычисление значений на входе в нейтронную сеть
             switch (agent.Direction)
             {
                 case Direction.North:
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_FRONT], NorthFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_LEFT], NorthFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_RIGTH], NorthFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_PROXIMITY], NorthFront, 1);
-                    break;
-                case Direction.South:
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_FRONT], NorthFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_LEFT], NorthFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_RIGTH], NorthFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_PROXIMITY], NorthFront, -1);
-                    break;
-                case Direction.West:
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_FRONT], WestFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_LEFT], WestFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_RIGTH], WestFront, 1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_PROXIMITY], WestFront, 1);
-                    break;
-                case Direction.East:
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_FRONT], WestFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_LEFT], WestFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_RIGTH], WestFront, -1);
-                    Percept(x, y, ref agent.Inputs[(int)SensorInputs.HERB_PROXIMITY], WestFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, NorthFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, NorthFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, NorthFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, NorthFront, 1);
+                    break;                  
+                case Direction.South:       
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, NorthFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, NorthFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, NorthFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, NorthFront, -1);
+                    break;                  
+                case Direction.West:        
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, WestFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, WestFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, WestFront, 1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, WestFront, 1);
+                    break;                  
+                case Direction.East:        
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, WestFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, WestFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, WestFront, -1);
+                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, WestFront, -1);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -111,7 +108,7 @@ namespace LifeSimulation
             {
                 case AgentActions.TurnLeft:
                 case AgentActions.TurnRight:
-                    Turn(winnerAction, agent);
+                    agent.Turn(winnerAction);
                     break;
                 case AgentActions.Move:
                     Landscape.Move(agent);
@@ -128,18 +125,14 @@ namespace LifeSimulation
 
             // Если энергия агента меньше или равна нулю - агент умирает
             // В противом случае проверяем, чне является ли этот агент самым старым
-
             if (agent.Energy <= 0)
             {
-                KillAgent(agent);
+                Landscape.KillAgent(agent);
             }
             else
             {
                 agent.Age++;
-                if (agent.Age > Landscape.AgentsMaxAge[agent.Type].Age)
-                {
-                    Landscape.AgentsMaxAge[agent.Type] = agent.DeepClone();
-                }
+                Landscape.Statistics.CheckMaxGenAgent(agent);
             }
         }
 
@@ -163,29 +156,29 @@ namespace LifeSimulation
             var ay = agent.Location.Y;
 
             // Выбираем съедаемый объект в зависимости от направления агента
-            int ret = 0;
+            bool isObjectChoosen;
             int ox;
             int oy;
             switch (agent.Direction)
             {
                 case Direction.North:
-                    ret = ChooseObject(plane, ax, ay, NorthProx, 1, out ox, out oy);
+                    isObjectChoosen = Landscape.ChooseObject(plane, ax, ay, NorthProx, 1, out ox, out oy);
                     break;
                 case Direction.South:
-                    ret = ChooseObject(plane, ax, ay, NorthProx, -1, out ox, out oy);
+                    isObjectChoosen = Landscape.ChooseObject(plane, ax, ay, NorthProx, -1, out ox, out oy);
                     break;
                 case Direction.West:
-                    ret = ChooseObject(plane, ax, ay, WestProx, 1, out ox, out oy);
+                    isObjectChoosen = Landscape.ChooseObject(plane, ax, ay, WestProx, 1, out ox, out oy);
                     break;
                 case Direction.East:
-                    ret = ChooseObject(plane, ax, ay, WestProx, -1, out ox, out oy);
+                    isObjectChoosen = Landscape.ChooseObject(plane, ax, ay, WestProx, -1, out ox, out oy);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             // Объект нашли - съедаем его!
-            if (ret != 0)
+            if (isObjectChoosen)
             {
                 if (plane == Landscape.PLANT_PLANE)
                 {
@@ -212,7 +205,7 @@ namespace LifeSimulation
                         {
                             agent.Eat();
 
-                            KillAgent(findedHerbivore);
+                            Landscape.KillAgent(findedHerbivore);
                         }
                     }
                 }
@@ -221,53 +214,8 @@ namespace LifeSimulation
             // Если агент имеет достаточно энергии для размножения, то позволяем ему сделать это
             if (agent.Energy > (ReproduceEnergyFactor * Agent.MaxEnergy))
             {
-                ReproduceAgent(agent);
+                Landscape.ReproduceAgent(agent);
             }
-        }
-
-        private void KillAgent(Agent agent)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static void ReproduceAgent(Agent agent)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static int ChooseObject(int plane, int ax, int ay, int[][] offsets, int neg, out int ox, out int oy)
-        {
-            // TODO разобраться с основным смыслом метода
-
-            throw new NotImplementedException();
-        }
-
-        private static void Turn(AgentActions action, Agent agent)
-        {
-            // В зависимости от направления поворота агента вычисляем новое направление движения
-            switch (agent.Direction)
-            {
-                case Direction.North:
-                    agent.Direction = action == AgentActions.TurnLeft ? Direction.West : Direction.East;
-                    break;
-                case Direction.South:
-                    agent.Direction = action == AgentActions.TurnLeft ? Direction.East : Direction.West;
-                    break;
-                case Direction.West:
-                    agent.Direction = action == AgentActions.TurnLeft ? Direction.North : Direction.South;
-                    break;
-                case Direction.East:
-                    agent.Direction = action == AgentActions.TurnLeft ? Direction.South : Direction.North;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        private static void Percept(int x, int y, ref int inputs, int[][] northFront, int i1)
-        {
-            // TODO нужно разобраться более внимательно (в книге написана какая-то чушь с инициализацией)
-            throw new NotImplementedException();
         }
     }
 }
