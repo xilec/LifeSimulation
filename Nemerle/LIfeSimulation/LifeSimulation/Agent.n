@@ -1,0 +1,81 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LifeSimulation
+{
+    using Location;
+    using Simulation;
+     
+    public enum AgentType
+    {
+        | Dead = -1
+        | Herbivore = 0
+        | Carnivore = 1
+    }
+    
+    public enum Direction
+    {
+        | North
+        | South
+        | West
+        | East
+    }
+    
+    /// <summary>
+    /// Description of AgentType.
+    /// </summary>
+    public class Agent
+    {      
+        public this()
+        {
+        }
+
+        public mutable Type : AgentType;
+        public mutable Energy : int;
+        public mutable Parent : int;
+        public mutable Age : int;
+        public mutable Generation : int;
+        public mutable Location : Location;
+        public mutable Direction : Direction;
+        public mutable Inputs : array[int] = array(MaxInputs);
+        public mutable WeightOI : array[int] = array(MaxInputs * MaxOutputs);
+        public mutable Biaso : array[int] = array(MaxOutputs);
+        public mutable Actions : array[int] = array(MaxOutputs);
+    }    
+
+    //public TypeHerbivore = 0;
+    //public TypeCarnivore = 1;
+
+    public enum SensorInputs
+    {
+        | HERB_FRONT      //= 0
+        | CARN_FRONT      //= 1
+        | PLANT_FRONT     //= 2
+
+        | HERB_LEFT       //= 3;
+        | CARN_LEFT       //= 4;
+        | PLANT_LEFT      //= 5;
+
+        | HERB_RIGTH      //= 6;
+        | CARN_RIGTH      //= 7;
+        | PLANT_RIGTH     //= 8;
+
+        | HERB_PROXIMITY  //= 9;
+        | CARN_PROXIMITY  //= 10;
+        | PLANT_PROXIMITY //= 11;
+    }
+
+    public enum AgentActions
+    {
+        | ACTION_TURN_LEFT  // = 0
+        | ACTION_TURN_RIGHT // = 1
+        | ACTION_MOVE       // = 2
+        | ACTION_EAT        // = 3
+    }
+}

@@ -1,0 +1,32 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LifeSimulation
+{
+    module Helpers
+    {
+        rand = Random();
+
+        public GetSRand() : double
+        {
+            rand.NextDouble()
+        }
+
+        public GetRand(x: int) : int
+        {
+            (GetSRand() * x) :> int
+        }
+        
+        // Возвращает значения, которые могут принимать веса нейронной сети
+        public GetWeight() : int
+        {
+            GetRand(9) - 1;
+        }
+    }
+}

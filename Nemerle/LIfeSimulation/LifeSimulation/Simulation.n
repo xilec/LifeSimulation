@@ -1,0 +1,158 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+using Nemerle.Imperative;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LifeSimulation
+{
+    using AgentType;
+    using Helpers;
+    
+    public module Simulation
+    {
+        public MaxSteps = 2000;
+                    
+        public MaxAgents = 36;
+        public MaxPlants = 35;       
+        
+        public Agents = array(MaxAgents) : array[Agent];
+        public Plants = array(MaxPlants) : array[Agent];                
+        
+        public SeedPopulation = 0;
+        public MaxEnergy = 200;
+        public MaxDirection = 4;
+                
+        public MaxGrid = 30;
+        public Landscape : array[array[2, short]] = array[array(MaxGrid, MaxGrid), array(MaxGrid, MaxGrid), array(MaxGrid, MaxGrid)];
+    
+        public MaxInputs = 12;
+        public MaxOutputs = 4;
+
+        public HERB_PLANE = 0;
+        public CARN_PLANE = 1;
+        public PLANT_PLANE = 2;
+        
+        // Смещения координат для суммирования объектов в поле зрения агента
+        public NorthFront : array[(int*int)] = array[(-2, -2), (-2, -1), (-2, 0), (-2, 1), (-2, 2)];
+        public NorthLeft : array[(int*int)] = array[(0, -2), (-1, -2)];
+        public NorthRight : array[(int*int)] = array[(0, 2), (-1, 2)];
+        public NorthProx : array[(int*int)] = array[(0, -1), (-1, -1), (-1, 0), (-1, 1), (0, 1)];
+        
+        public WestFront : array[(int*int)] = array[(2, -2), (1, -2), (0, -2), (-1, -2), (-2, -2)];
+        public WestLeft : array[(int*int)] = array[(2, 0), (2, -1)];
+        public WestRight : array[(int*int)] = array[(-2, 0), (-2, -1)];
+        public WestProx : array[(int*int)] = array[(1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0)];
+        
+        bestAgent = Agent() : Agent;
+        mutable agentTypeCounts : Dictionary[AgentType, int] = Dictionary(); 
+        
+        public Init() : void
+        {
+            agentTypeCounts.Add(Carnivore, 0);
+            agentTypeCounts.Add(Herbivore, 0);
+
+            // Инициализация измерения растений
+            for(mutable plantCount = 0; plantCount < MaxPlants; plantCount++)
+            {
+                GrowPlant(plantCount);
+            }
+            
+            when(SeedPopulation == 0)
+            {
+                for(mutable agentCount = 0; agentCount < MaxAgents; agentCount++)
+                {
+                    Agents[agentCount].Type = if (agentCount < (MaxAgents / 2)) { Herbivore } else { Carnivore; }
+                    
+                    InitAgent(Agents[agentCount]);
+                }
+            }                       
+        }
+        
+        GrowPlant(plantIndex: int) : void
+        {
+            while(true)
+            {                
+                def x = GetRand(MaxGrid);
+                def y = GetRand(MaxGrid);
+                
+                when(Landscape[PLANT_PLANE][y, x] == 0)
+                {
+                    Plants[plantIndex].Location.X = x;
+                    Plants[plantIndex].Location.Y = y;
+                    Landscape[PLANT_PLANE][y, x]++;
+                    
+                    break;
+                }
+            }
+        }
+                
+        InitAgent(agent: Agent) : void
+        {            
+            agent.Energy = MaxEnergy / 2;
+            agent.Age = 0;
+            agent.Generation = 1;
+            agentTypeCounts[agent.Type]++;
+            
+            FindEmptySpot(agent);
+            
+            for(mutable i = 0; i < MaxInputs * MaxOutputs; i++)
+            {
+                agent.WeightOI[i] = GetWeight();
+            }
+            
+            for(mutable i = 0; i < MaxOutputs; i++)
+            {
+                agent.Biaso[i] = GetWeight();
+            }
+        }
+        
+        
+        FindEmptySpot(agent : Agent) : void
+        {
+            agent.Location.X = -1;
+            agent.Location.Y = -1;
+            
+            do
+            {
+                agent.Location.X = GetRand(MaxGrid);
+                agent.Location.Y = GetRand(MaxGrid);
+                
+            } while(Landscape[agent.Type :> int][agent.Location.Y, agent.Location.X] == 0);
+            
+            agent.Direction = GetRand(MaxDirection) :> Direction;
+            Landscape[agent.Type :> int][agent.Location.Y, agent.Location.X]++;            
+        }
+
+        public Simulate() : void
+        {
+            foreach(type in [Herbivore, Carnivore])
+            {
+                for(mutable i = 0; i < MaxAgents; i++)
+                {
+                    when(Agents[i].Type == type)
+                    {
+                        SimulateAgent(Agents[i]);
+                    }
+                }
+            }
+        }
+        
+        SimulateAgent(agent : Agent) : void
+        {
+            def x = agent.Location.X;
+            def y = agent.Location.Y;
+            
+            //match (agent.Direction)
+            //{
+            //| 
+            //}
+            
+            throw NotImplementedException();
+        }        
+    }
+}
