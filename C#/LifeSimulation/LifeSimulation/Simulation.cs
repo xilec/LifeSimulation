@@ -26,7 +26,7 @@ namespace LifeSimulation
 
         public const int MaxGrid = 30;
 
-        public static short[][,] Landscape = { new short[MaxGrid, MaxGrid], new short[MaxGrid, MaxGrid], new short[MaxGrid, MaxGrid] };
+        public static Agent[][,] Landscape = { new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid] };
 
         public static Agent[] Agents = new Agent[MaxAgents];
         public static Agent[] Plants = new Agent[MaxAgents];
@@ -78,11 +78,12 @@ namespace LifeSimulation
                 var y = Helpers.GetRand(MaxGrid);
 
 
-                if (Landscape[PLANT_PLANE][y, x] == 0)
+                if (Landscape[PLANT_PLANE][y, x] == null)
                 {
-                    Plants[plantIndex].Location.X = x;
-                    Plants[plantIndex].Location.Y = y;
-                    Landscape[PLANT_PLANE][y, x]++;
+                    var plant = Plants[plantIndex];
+                    plant.Location.X = x;
+                    plant.Location.Y = y;
+                    Landscape[PLANT_PLANE][y, x] = plant;
 
                     break;
                 }
@@ -118,10 +119,10 @@ namespace LifeSimulation
             {
                 agent.Location.X = Helpers.GetRand(MaxGrid);
                 agent.Location.Y = Helpers.GetRand(MaxGrid);
-            } while (Landscape[(int) agent.Type][agent.Location.Y, agent.Location.X] == 0);
+            } while (Landscape[(int) agent.Type][agent.Location.Y, agent.Location.X] == null);
 
             agent.Direction = (Direction)Helpers.GetRand(MaxDirection);
-            Landscape[(int)agent.Type][agent.Location.Y, agent.Location.X]++;
+            Landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] = agent;
         }
 
         public static void Simulate()
@@ -315,7 +316,7 @@ namespace LifeSimulation
                             agent.Energy = MaxEnergy;
                         }
 
-                        Landscape[PLANT_PLANE][oy, ox]--;
+                        Landscape[PLANT_PLANE][oy, ox] = null;
                         
                         GrowPlant(i);
                     }
@@ -363,7 +364,9 @@ namespace LifeSimulation
 
         private static int ChooseObject(int plane, int ax, int ay, int[][] offsets, int neg, out int ox, out int oy)
         {
-            // Проходим по всему списку смещений
+            // TODO разобраться с основным смыслом метода
+
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -378,7 +381,7 @@ namespace LifeSimulation
         {
             // Удаляем агента со старого места
             var type = (int)agent.Type;
-            Landscape[type][agent.Location.Y, agent.Location.X]--;
+            Landscape[type][agent.Location.Y, agent.Location.X] = null;
 
             // Обновляем координаты агента
             var direction = (int)agent.Direction;
@@ -386,7 +389,7 @@ namespace LifeSimulation
             agent.Location.Y = Clip(agent.Location.Y + Offsets[direction][0]);
 
             // Помещаем агента в новое место
-            Landscape[type][agent.Location.Y, agent.Location.X]++;
+            Landscape[type][agent.Location.Y, agent.Location.X] = agent;
         }
 
         private static int Clip(int position)
