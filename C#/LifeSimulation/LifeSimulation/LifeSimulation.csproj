@@ -44,6 +44,7 @@
     <Compile Include="AgentType.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Landscape.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorInputs.cs" />
