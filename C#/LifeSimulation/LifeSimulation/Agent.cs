@@ -13,6 +13,7 @@ namespace LifeSimulation
 
         private Agent()
         {
+            Location = new Location(-1, -1);
         }
 
         public Agent(AgentType type)
@@ -21,6 +22,8 @@ namespace LifeSimulation
             Energy = MaxEnergy / 2;
             Age = 0;
             Generation = 1;
+            Location = new Location(-1, -1);
+            Direction = Direction.West;
 
             for (int i = 0; i < MaxInputs * MaxOutputs; i++)
             {
@@ -94,6 +97,4 @@ namespace LifeSimulation
             return new Agent();
         }
     }
-
-
 }

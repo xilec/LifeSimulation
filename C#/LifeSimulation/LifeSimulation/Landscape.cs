@@ -19,7 +19,7 @@ namespace LifeSimulation
         public Agent[] Agents = new Agent[MaxAgents];
         public Agent[] Plants = new Agent[MaxPlants];
 
-        public Statistics Statistics = new Statistics();
+        public readonly Statistics Statistics = new Statistics();
 
         /// <summary>
         /// Направления движения в координатной сетке
@@ -36,13 +36,23 @@ namespace LifeSimulation
             InitAgents();
         }
 
+        public int GetRowsCount()
+        {
+            return MaxGrid;
+        }
+
+        public int GetColumnsCount()
+        {
+            return MaxGrid;
+        }
+
         private void InitAgents()
         {
-            for (int agentCount = 0; agentCount < MaxAgents; agentCount++)
+            for (int agentIndex = 0; agentIndex < MaxAgents; agentIndex++)
             {
-                var newAgentType = agentCount < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
+                var newAgentType = agentIndex < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
                 var newAgent = new Agent(newAgentType);
-                Agents[agentCount] = newAgent;
+                Agents[agentIndex] = newAgent;
                 AddAgent(newAgent);
             }
         }
@@ -102,7 +112,7 @@ namespace LifeSimulation
             {
                 agent.Location.X = Helpers.GetRand(MaxGrid);
                 agent.Location.Y = Helpers.GetRand(MaxGrid);
-            } while (_landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] == null);
+            } while (_landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] != null);
 
             agent.Direction = (Direction)Helpers.GetRand(MaxDirection);
             _landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] = agent;
@@ -224,7 +234,7 @@ namespace LifeSimulation
 
         public void ReproduceAgent(Agent agent)
         {
-            // Не даем агенту одного типа азнять более половины дотупных ячеек
+            // Не даем агенту одного типа занять более половины дотупных ячеек
             if (Statistics.AgentTypeCounts[agent.Type] >= MaxAgents / 2)
             {
                 return;

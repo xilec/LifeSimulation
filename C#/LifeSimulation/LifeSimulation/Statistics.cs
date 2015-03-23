@@ -29,7 +29,7 @@ namespace LifeSimulation
         public void CheckMaxGenAgent(Agent agent)
         {
             Agent maxGenAgent;
-            if (_agentMaxGen.TryGetValue(agent.Type, out maxGenAgent))
+            if (!_agentMaxGen.TryGetValue(agent.Type, out maxGenAgent))
             {
                 _agentMaxGen.Add(agent.Type, agent.DeepClone());
                 return;

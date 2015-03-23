@@ -23,9 +23,18 @@ namespace LifeSimulation
 
         public Landscape Landscape = new Landscape();
 
-
-        public void Init()
+        public Simulation()
         {
+        }
+
+        public int ColumnsCount
+        {
+            get { return Landscape.GetColumnsCount(); }
+        }
+
+        public int RowsCount
+        {
+            get { return Landscape.GetRowsCount(); }
         }
 
         public void Simulate()
@@ -33,9 +42,14 @@ namespace LifeSimulation
             var agentTypes = new[] {AgentType.Herbivore, AgentType.Carnivore};
             foreach (var type in agentTypes)
             {
-                for (int i = 0; i < Landscape.MaxAgents; i++)
+                for (int i = 0; i < Landscape.Agents.Length; i++)
                 {
                     var agent = Landscape.Agents[i];
+                    if (agent == null)
+                    {
+                        continue;
+                    }
+
                     if (agent.Type == type)
                     {
                         SimulateAgent(agent);
