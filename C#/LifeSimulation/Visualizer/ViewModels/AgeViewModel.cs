@@ -20,12 +20,9 @@ namespace Visualizer.ViewModels
         {
             get
             {
-                var timer = Stopwatch.StartNew();
-
                 var landscape = LandscapeSerializer.Deserialize(_serializedLandscape);
                 var result = CreateSimulatedField(landscape);
 
-                Debug.WriteLine(timer.ElapsedMilliseconds);
                 return result;
             }
         }
@@ -44,6 +41,7 @@ namespace Visualizer.ViewModels
 
         private FastObservableCollection<AgentViewModel> CreateSimulatedField(Landscape landscape)
         {
+            // TODO заменить на обновление только агентов и расстений (для улучшения скорости обновления)
             var columnsCount = landscape.GetColumnsCount();
             var rowsCount = landscape.GetRowsCount();
 
@@ -63,8 +61,7 @@ namespace Visualizer.ViewModels
                 }
 
                 var cellIndex = GetCellIndex(plant, columnsCount);
-                cells.RemoveAt(cellIndex);
-                cells.Insert(cellIndex, new AgentViewModel(VisualAgentType.Plant));
+                cells[cellIndex] = new AgentViewModel(VisualAgentType.Plant);
             }
 
             foreach (var agent in landscape.Agents)
@@ -75,7 +72,6 @@ namespace Visualizer.ViewModels
                 }
 
                 var cellIndex = GetCellIndex(agent, columnsCount);
-                cells.RemoveAt(cellIndex);
                 var type = VisualAgentType.None;
                 switch (agent.Type)
                 {
@@ -87,14 +83,14 @@ namespace Visualizer.ViewModels
                         break;
                 }
 
-                cells.Insert(cellIndex, new AgentViewModel(type, agent.Direction));
+                cells[cellIndex] = new AgentViewModel(type, agent.Direction);
             }
 
             return cells;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int GetCellIndex(Agent agent, int columns)
+        public static int GetCellIndex(Agent agent, int columns)
         {
             var location = agent.Location;
             var cellIndex = columns * location.Y + location.X;

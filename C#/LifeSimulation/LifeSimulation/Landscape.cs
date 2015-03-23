@@ -155,6 +155,8 @@ namespace LifeSimulation
 
         public void Move(Agent agent)
         {
+            // TODO Поправить направление смещения
+
             // Удаляем агента со старого места
             RemoveAgent(agent);
 

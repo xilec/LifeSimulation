@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.NetworkInformation;
 using Catel.Collections;
@@ -47,30 +49,59 @@ namespace Visualizer.ViewModels
                 _selectedAge = value;
 
                 OnPropertyChanged();
-                //OnPropertyChanged("SelectedAgeCells");
+
+                if (_selectedAgeCells == null)
+                {
+                    OnPropertyChanged("SelectedAgeCells");                    
+                }
+                else
+                {
+                    UpdateCells();
+                }
             }
         }
 
-        //public FastObservableCollection<AgentViewModel> SelectedAgeCells
-        //{
-        //    get
-        //    {
-        //        if (SelectedAge == null)
-        //        {
-        //            return null;
-        //        }
+        private void UpdateCells()
+        {
+            var cells = _selectedAgeCells;
+            var newCells = SelectedAge.Cells;
+            for (int i = 0; i < cells.Count; i++)
+            {
+                var cell = cells[i];
+                var newCell = newCells[i];
 
-        //        return SelectedAge.Cells;
+                if (cell.Type != newCell.Type)
+                {
+                    cells[i] = newCell;
+                    continue;
+                }
 
-        //        //if (_selectedAgeCells == null)
-        //        //{
-        //        //    return SelectedAge.Cells;
-        //        //}
+                switch (cell.Type)
+                {
+                    case VisualAgentType.None:
 
-        //        //_selectedAgeCells.ReplaceRange(SelectedAge.Cells);
-        //        //return _selectedAgeCells;
-        //    }
-        //}
+                        break;
+                    case VisualAgentType.Plant:
+                    case VisualAgentType.Herbivore:
+                    case VisualAgentType.Carnivore:
+                        cells[i] = newCell;
+                        break;
+                }
+            }
+        }
+
+        public FastObservableCollection<AgentViewModel> SelectedAgeCells
+        {
+            get
+            {
+                if (SelectedAge == null)
+                {
+                    return null;
+                }
+
+                return _selectedAgeCells = SelectedAge.Cells;
+            }
+        }
 
         public int GridColumns { get; protected set; }
         public int GridRows { get; protected set; }

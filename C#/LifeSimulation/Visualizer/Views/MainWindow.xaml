@@ -157,7 +157,7 @@
         <ItemsControl Name="GameField"
                       Grid.Row="0"
                       Grid.Column="1"
-                      ItemsSource="{Binding SelectedAge.Cells,
+                      ItemsSource="{Binding SelectedAgeCells,
                                             Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
