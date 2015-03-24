@@ -7,6 +7,8 @@
         xmlns:viewModels="clr-namespace:Visualizer.ViewModels"
         Name="_self"
         Title="Life simulation"
+        FocusManager.FocusedElement="{Binding ElementName=AgesList,
+                                              Mode=OneTime}"
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance Type=viewModels:TestMainViewModel,
                                          IsDesignTimeCreatable=True}"
@@ -28,6 +30,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
 
         <Grid Column="1" Row="1" />
         <Grid Width="300"
@@ -141,7 +144,8 @@
                 <RowDefinition Height="*" />
             </catel:StackGrid.RowDefinitions>
             <Label>Ages:</Label>
-            <ListBox Width="200"
+            <ListBox Name="AgesList"
+                     Width="200"
                      IsSynchronizedWithCurrentItem="True"
                      ItemsSource="{Binding Ages,
                                            Mode=OneWay}"
@@ -157,6 +161,7 @@
         <ItemsControl Name="GameField"
                       Grid.Row="0"
                       Grid.Column="1"
+                      Focusable="False"
                       ItemsSource="{Binding SelectedAgeCells,
                                             Mode=OneWay}">
             <ItemsControl.ItemsPanel>
@@ -194,6 +199,5 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-
     </Grid>
 </Window>

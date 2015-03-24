@@ -50,6 +50,11 @@ namespace Visualizer.ViewModels
 
                 OnPropertyChanged();
 
+                if (SelectedAge == null)
+                {
+                    return;
+                }
+
                 if (_selectedAgeCells == null)
                 {
                     OnPropertyChanged("SelectedAgeCells");                    
