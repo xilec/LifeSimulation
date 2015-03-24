@@ -21,7 +21,7 @@ namespace LifeSimulation
 
         //private static Agent _bestAgent = new Agent();
 
-        public Landscape Landscape = new Landscape();
+        public Landscape Landscape = Landscape.Create();
 
         public Simulation()
         {

@@ -29,11 +29,28 @@ namespace LifeSimulation
         /// </remarks>
         private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
 
-        public Landscape()
+        private Landscape()
+        {
+            Init();
+        }
+
+        private void Init()
         {
             InitPlants();
-
             InitAgents();
+        }
+
+        public static Landscape Create()
+        {
+            var landscape = new Landscape();
+            landscape.Init();
+
+            return landscape;
+        }
+
+        public static Landscape CreateTest()
+        {
+            return new Landscape();
         }
 
         public int GetRowsCount()

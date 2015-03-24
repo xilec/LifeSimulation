@@ -120,7 +120,7 @@ namespace Visualizer.ViewModels
             var list = new List<string>();
             for (int i = 0; i < 15; i++)
             {
-                var landscape = new Landscape();
+                var landscape = Landscape.Create();
                 list.Add(LandscapeSerializer.Serialize(landscape));
             }
 
