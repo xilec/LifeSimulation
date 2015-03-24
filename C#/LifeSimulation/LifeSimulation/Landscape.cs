@@ -31,7 +31,6 @@ namespace LifeSimulation
 
         private Landscape()
         {
-            Init();
         }
 
         private void Init()
