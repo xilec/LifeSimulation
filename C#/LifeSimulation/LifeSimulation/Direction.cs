@@ -4,7 +4,7 @@ namespace LifeSimulation
     {
         North,
         South,
+        East,
         West,
-        East
     }
 }
