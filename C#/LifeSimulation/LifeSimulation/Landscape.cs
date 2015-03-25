@@ -259,8 +259,8 @@ namespace LifeSimulation
             }
 
             // Найти пустое место и скопировать агента. При этом происходит мутация одного веса или смещение  в нейронной сети агента
-            var emptyAgentIndex = -1;
-            for (int i = 0; i < Agents.Length; i++)
+            var emptyAgentIndex = 0;
+            for (; emptyAgentIndex < Agents.Length; emptyAgentIndex++)
             {
                 if (Agents[emptyAgentIndex] == null)
                 {
@@ -268,7 +268,7 @@ namespace LifeSimulation
                 }
             }
 
-            if (emptyAgentIndex == -1)
+            if (emptyAgentIndex == Agents.Length)
             {
                 return;
             }
