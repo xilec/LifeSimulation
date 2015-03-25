@@ -100,7 +100,7 @@ namespace LifeSimulation
                 // Перемножаем значения на входе выходной ячейки на соответствующие веса
                 for (int inIndex = 0; inIndex < Agent.MaxInputs; inIndex++)
                 {
-                    agent.Inputs[inIndex] += (agent.Inputs[inIndex]*agent.WeightOI[(outIndex * Agent.MaxInputs) + inIndex]);
+                    agent.Inputs[outIndex] += (agent.Inputs[inIndex]*agent.WeightOI[(outIndex * Agent.MaxInputs) + inIndex]);
                 }
             }
             var largest = -9;
