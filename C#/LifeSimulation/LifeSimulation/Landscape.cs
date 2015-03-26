@@ -301,6 +301,8 @@ namespace LifeSimulation
             for (int planeIndex = 0; planeIndex < _landscape.Length; planeIndex++)
             {
                 var plane = _landscape[planeIndex];
+                agent.Inputs[inputOffset + planeIndex] = 0;
+
                 foreach (var offset in offsets)
                 {
                     var xoff = Clip(agentLocation.X + (offset[1]*neg));
