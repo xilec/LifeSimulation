@@ -34,18 +34,22 @@
 
         <Grid Column="1" Row="1" />
         <Grid Width="300"
-              Column="3"
+              Column="2"
               RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <catel:StackGrid>
+            <catel:StackGrid DataContext="{Binding Path=SelectedAge, Mode=OneWay}">
                 <catel:StackGrid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </catel:StackGrid.ColumnDefinitions>
                 <catel:StackGrid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -66,23 +70,35 @@
                         <Setter Property="IsReadOnly" Value="True" />
                     </Style>
                 </catel:StackGrid.Resources>
-                <Label>Current statistics:</Label>
+                <Label>Current statistics</Label>
                 <catel:EmptyRow />
 
-                <Label>Plants:</Label>
-                <TextBox />
+                <catel:EmptyCell />
+                <Label>Herbivores</Label>
+                <Label>Carnivores</Label>
 
-                <Label>Herbivores:</Label>
-                <TextBox />
+                <Label>Count</Label>
+                <TextBox Text="{Binding HerbivoreStats.Count, Mode=OneWay}" />
+                <TextBox Text="{Binding CarnivoreStats.Count, Mode=OneWay}" />
 
-                <Label>Carnivores:</Label>
-                <TextBox />
 
-                <Label>Birthes:</Label>
-                <TextBox />
+                <Label>Birthes</Label>
+                <TextBox Text="{Binding HerbivoreStats.Reproductions, Mode=OneWay}" />
+                <TextBox Text="{Binding CarnivoreStats.Reproductions, Mode=OneWay}" />
 
-                <Label>Deathes:</Label>
-                <TextBox />
+                <Label>Deathes</Label>
+                <TextBox Text="{Binding HerbivoreStats.Deathes, Mode=OneWay}" />
+                <TextBox Text="{Binding CarnivoreStats.Deathes, Mode=OneWay}" />
+
+                <Label>Max ages</Label>
+                <TextBox Text="{Binding HerbivoreStats.MaxAges, Mode=OneWay}" />
+                <TextBox Text="{Binding CarnivoreStats.MaxAges, Mode=OneWay}" />
+
+                <Label />
+                <catel:EmptyRow />
+
+                <Label>Legend</Label>
+                <catel:EmptyRow />
 
                 <catel:StackGrid>
                     <catel:StackGrid.ColumnDefinitions>
@@ -193,7 +209,7 @@
                                Foreground="{Binding ForegroundColor,
                                                     Mode=OneWay}"
                                Padding="0"
-                               ToolTip="{Binding Type,
+                               ToolTip="{Binding Hint,
                                                  Mode=OneWay}" />
                     </Border>
                 </DataTemplate>

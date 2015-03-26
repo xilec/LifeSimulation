@@ -121,7 +121,7 @@ namespace LifeSimulation
             else
             {
                 agent.Age++;
-                Landscape.Statistics.CheckMaxGenAgent(agent);
+                Landscape.Statistics.CheckMaxGen(agent);
             }
         }
 

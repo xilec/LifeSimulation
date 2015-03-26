@@ -16,18 +16,6 @@ namespace Visualizer.ViewModels
             _serializedLandscape = serializedLandscape;
         }
 
-        public FastObservableCollection<AgentViewModel> Cells
-        {
-            get
-            {
-                var landscape = LandscapeSerializer.Deserialize(_serializedLandscape);
-                var result = CreateSimulatedField(landscape);
-
-                return result;
-            }
-        }
-
-
         public int Number
         {
             get { return _number; }
@@ -38,6 +26,38 @@ namespace Visualizer.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public AgentStatisticsViewModel HerbivoreStats { get; private set; }
+
+        public AgentStatisticsViewModel CarnivoreStats { get; private set; }
+
+        public FastObservableCollection<AgentViewModel> Cells
+        {
+            get
+            {
+                var landscape = LandscapeSerializer.Deserialize(_serializedLandscape);
+                var result = CreateSimulatedField(landscape);
+
+                HerbivoreStats = FillStatistics(AgentType.Herbivore, landscape.Statistics);
+                CarnivoreStats = FillStatistics(AgentType.Carnivore, landscape.Statistics);
+                OnPropertyChanged("HerbivoreStats");
+                OnPropertyChanged("CarnivoreStats");
+
+                return result;
+            }
+        }
+
+        private static AgentStatisticsViewModel FillStatistics(AgentType agentType, Statistics stats)
+        {
+            var count = stats.AgentTypeCounts[agentType];
+            var reproductions = stats.AgentTypeReproductions[agentType];
+            var deathes = stats.AgentTypeDeathes[agentType];
+            var maxAgeAgent = stats.GetMaxAgeAgent(agentType);
+
+            var viewModel = new AgentStatisticsViewModel(count, reproductions, deathes, maxAgeAgent != null ? maxAgeAgent.Age : 0);
+            return viewModel;
+        }
+
 
         private FastObservableCollection<AgentViewModel> CreateSimulatedField(Landscape landscape)
         {
@@ -83,7 +103,7 @@ namespace Visualizer.ViewModels
                         break;
                 }
 
-                cells[cellIndex] = new AgentViewModel(type, agent.Direction);
+                cells[cellIndex] = new AgentViewModel(type, agent);
             }
 
             return cells;

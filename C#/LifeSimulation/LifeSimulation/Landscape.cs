@@ -228,7 +228,7 @@ namespace LifeSimulation
         public void KillAgent(Agent agent)
         {
             // Пришла смерть (или агента съели)
-            Statistics.CheckBestAgent(agent);
+            Statistics.CheckMaxAge(agent);
 
             int agentIndex;
             for (agentIndex = 0; agentIndex < Agents.Length; agentIndex++)
@@ -247,6 +247,7 @@ namespace LifeSimulation
             Agents[agentIndex] = null;
             RemoveAgent(agent);
             Statistics.AgentTypeCounts[agent.Type]--;
+            Statistics.AgentTypeDeathes[agent.Type]++;
         }
 
         public void ReproduceAgent(Agent agent)
@@ -283,7 +284,7 @@ namespace LifeSimulation
             child.Generation++;
             child.Age = 0;
 
-            Statistics.CheckMaxGenAgent(child);
+            Statistics.CheckMaxGen(child);
 
             // Репродукция уменьшает энергию родителя вдвое
             child.Energy = agent.Energy = Agent.MaxEnergy / 2;

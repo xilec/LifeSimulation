@@ -10,17 +10,17 @@ namespace Visualizer.ViewModels
     public class AgentViewModel : ViewModelBase
     {
         private VisualAgentType _type;
-        private Direction _directionValue;
+        private readonly Agent _agent;
 
         public AgentViewModel(VisualAgentType type)
         {
             _type = type;
         }
 
-        public AgentViewModel(VisualAgentType type, Direction directionValue)
+        public AgentViewModel(VisualAgentType type, Agent agent)
         {
-            _directionValue = directionValue;
             _type = type;
+            _agent = agent;
         }
 
         public VisualAgentType Type
@@ -37,11 +37,11 @@ namespace Visualizer.ViewModels
 
         public Direction DirectionValue
         {
-            get { return _directionValue; }
+            get { return _agent.Direction; }
             set
             {
-                if (value == _directionValue) return;
-                _directionValue = value;
+                if (value == _agent.Direction) return;
+                _agent.Direction = value;
                 OnPropertyChanged();
                 OnPropertyChanged("Direction");
             }
@@ -132,6 +132,27 @@ namespace Visualizer.ViewModels
                 }
 
                 return direction;
+            }
+        }
+
+        public string Hint
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case VisualAgentType.None:
+                        return null;
+                    case VisualAgentType.Plant:
+                        return "Plant";
+                    case VisualAgentType.Herbivore:
+                    case VisualAgentType.Carnivore:
+                        var hint = Type.ToString() + Environment.NewLine;
+                        hint += "Energy: " + _agent.Energy;
+                        return hint;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
         }
     }

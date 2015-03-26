@@ -71,6 +71,7 @@
     </ApplicationDefinition>
     <Compile Include="LandscapeSerializer.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\AgentStatisticsViewModel.cs" />
     <Compile Include="ViewModels\AgeViewModel.cs" />
     <Compile Include="ViewModels\AgentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

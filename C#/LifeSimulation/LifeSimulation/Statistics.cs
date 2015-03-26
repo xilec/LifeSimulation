@@ -4,8 +4,8 @@ namespace LifeSimulation
 {
     public class Statistics
     {
-        private readonly Dictionary<AgentType, Agent> _bestAgents = new Dictionary<AgentType, Agent>();
-        private readonly Dictionary<AgentType, Agent> _agentMaxGen = new Dictionary<AgentType, Agent>();
+        private readonly Dictionary<AgentType, Agent> _agentsMaxGen = new Dictionary<AgentType, Agent>();
+        private readonly Dictionary<AgentType, Agent> _agentsMaxAge = new Dictionary<AgentType, Agent>();
 
         public readonly Dictionary<AgentType, int> AgentTypeCounts = new Dictionary<AgentType, int>
         {
@@ -19,41 +19,31 @@ namespace LifeSimulation
             {AgentType.Herbivore, 0},
         };
 
-        private readonly Dictionary<AgentType, Agent> _agentsMaxAge = new Dictionary<AgentType, Agent>
+        public readonly Dictionary<AgentType, int> AgentTypeDeathes = new Dictionary<AgentType, int>
         {
-            {AgentType.Herbivore, null},
-            {AgentType.Carnivore, null}
+            {AgentType.Carnivore, 0},
+            {AgentType.Herbivore, 0},
         };
 
-
-        public void CheckMaxGenAgent(Agent agent)
+        public void CheckMaxGen(Agent agent)
         {
             Agent maxGenAgent;
-            if (!_agentMaxGen.TryGetValue(agent.Type, out maxGenAgent))
+            if (!_agentsMaxGen.TryGetValue(agent.Type, out maxGenAgent))
             {
-                _agentMaxGen.Add(agent.Type, agent.DeepClone());
+                _agentsMaxGen.Add(agent.Type, agent.DeepClone());
                 return;
             }
 
             if (maxGenAgent.Generation < agent.Generation)
             {
-                _agentMaxGen[agent.Type] = agent.DeepClone();
+                _agentsMaxGen[agent.Type] = agent.DeepClone();
             }
         }
 
-        public void CheckBestAgent(Agent agent)
+        public Agent GetMaxGenAgent(AgentType agentType)
         {
-            Agent bestAgent;
-            if (!_bestAgents.TryGetValue(agent.Type, out bestAgent))
-            {
-                _bestAgents.Add(agent.Type, agent.DeepClone());
-                return;
-            }
-
-            if (agent.Age > bestAgent.Age)
-            {
-                _bestAgents[agent.Type] = agent.DeepClone();
-            }
+            Agent agent = _agentsMaxGen.TryGetValue(agentType, out agent) ? agent : null;
+            return agent;
         }
 
         public void CheckMaxAge(Agent agent)
@@ -62,12 +52,19 @@ namespace LifeSimulation
             if (!_agentsMaxAge.TryGetValue(agent.Type, out maxAgeAgent))
             {
                 _agentsMaxAge.Add(agent.Type, agent.DeepClone());
+                return;
             }
 
             if (agent.Age > maxAgeAgent.Age)
             {
                 _agentsMaxAge[agent.Type] = agent.DeepClone();
             }
+        }
+
+        public Agent GetMaxAgeAgent(AgentType agentType)
+        {
+            Agent agent = _agentsMaxAge.TryGetValue(agentType, out agent) ? agent : null;
+            return agent;
         }
 
     }
