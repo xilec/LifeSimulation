@@ -171,8 +171,6 @@ namespace LifeSimulation
 
         public void Move(Agent agent)
         {
-            // TODO Поправить направление смещения
-
             // Удаляем агента со старого места
             RemoveAgent(agent);
 
@@ -180,6 +178,7 @@ namespace LifeSimulation
             var direction = (int)agent.Direction;
             agent.Location.X = Clip(agent.Location.X + Offsets[direction][1]);
             agent.Location.Y = Clip(agent.Location.Y + Offsets[direction][0]);
+            SetAgentInPosition(agent);
         }
 
         private static int Clip(int position)
