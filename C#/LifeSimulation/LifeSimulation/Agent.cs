@@ -96,5 +96,35 @@ namespace LifeSimulation
         {
             return new Agent();
         }
+
+        public AgentActions MakeDecision()
+        {
+            // Вычисление в сети
+            for (int outIndex = 0; outIndex < MaxOutputs; outIndex++)
+            {
+                // Инициализация входной ячейки сложением
+                Actions[outIndex] = Biaso[outIndex];
+
+                // Перемножаем значения на входе выходной ячейки на соответствующие веса
+                for (int inIndex = 0; inIndex < MaxInputs; inIndex++)
+                {
+                    Actions[outIndex] += (Inputs[inIndex]*WeightOI[(outIndex*MaxInputs) + inIndex]);
+                }
+            }
+            var largest = Int32.MinValue;
+            var winnerOutput = Int32.MinValue;
+
+            // Выбор ячейки с максимальным значением (победитель получает все)
+            for (int outIndex = 0; outIndex < MaxOutputs; outIndex++)
+            {
+                if (Actions[outIndex] >= largest)
+                {
+                    largest = Actions[outIndex];
+                    winnerOutput = outIndex;
+                }
+            }
+            var action = (AgentActions)winnerOutput;
+            return action;
+        }
     }
 }

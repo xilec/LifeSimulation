@@ -91,33 +91,8 @@ namespace LifeSimulation
                     throw new ArgumentOutOfRangeException();
             }
 
-            // Вычисление в сети
-            for (int outIndex = 0; outIndex < Agent.MaxOutputs; outIndex++)
-            {
-                // Инициализация входной ячейки сложением
-                agent.Actions[outIndex] = agent.Biaso[outIndex];
-                
-                // Перемножаем значения на входе выходной ячейки на соответствующие веса
-                for (int inIndex = 0; inIndex < Agent.MaxInputs; inIndex++)
-                {
-                    agent.Actions[outIndex] += (agent.Inputs[inIndex]*agent.WeightOI[(outIndex * Agent.MaxInputs) + inIndex]);
-                }
-            }
-            var largest = int.MinValue;
-            var winner = int.MinValue;
-
-            // Выбор ячейки с максимальным значением (победитель получает все)
-            for (int outIndex = 0; outIndex < Agent.MaxOutputs; outIndex++)
-            {
-                if (agent.Actions[outIndex] >= largest)
-                {
-                    largest = agent.Actions[outIndex];
-                    winner = outIndex;
-                }
-            }
-
             // Выполнение выбранного действия
-            var winnerAction = (AgentActions)winner;
+            var winnerAction = agent.MakeDecision();
             switch (winnerAction)
             {
                 case AgentActions.TurnLeft:
