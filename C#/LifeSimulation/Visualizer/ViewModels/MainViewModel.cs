@@ -16,17 +16,52 @@ namespace Visualizer.ViewModels
         private ObservableCollection<AgeViewModel> _ages;
         private AgeViewModel _selectedAge;
         private FastObservableCollection<AgentViewModel> _selectedAgeCells;
+        private int[] _horizontalCoordinates;
+        private int[] _verticalCoordinates;
 
         public MainViewModel(List<string> serializedLandscapes, int rowsCount, int columnsCount)
         {
             GridRows = rowsCount;
             GridColumns = columnsCount;
 
+            HorizontalCoordinates = Enumerable.Range(0, GridColumns).ToArray();
+            VerticalCoordinates = Enumerable.Range(0, GridRows).ToArray();
+
             Ages = new ObservableCollection<AgeViewModel>(serializedLandscapes.Select((x, i) => new AgeViewModel(i, x)));
 
             if (Ages.Any())
             {
                 SelectedAge = Ages.First();
+            }
+        }
+
+        public int[] HorizontalCoordinates
+        {
+            get { return _horizontalCoordinates; }
+            private set
+            {
+                if (Equals(value, _horizontalCoordinates))
+                {
+                    return;
+                }
+
+                _horizontalCoordinates = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int[] VerticalCoordinates
+        {
+            get { return _verticalCoordinates; }
+            private set
+            {
+                if (Equals(value, _verticalCoordinates))
+                {
+                    return;
+                }
+
+                _verticalCoordinates = value;
+                OnPropertyChanged();
             }
         }
 
@@ -115,7 +150,7 @@ namespace Visualizer.ViewModels
 
     class DesignMainViewModel : MainViewModel
     {
-        public const int GridSize = 10;
+        public const int GridSize = 30;
 
         public DesignMainViewModel() : base(GetTestLandscapes(), GridSize, GridSize)
         {
