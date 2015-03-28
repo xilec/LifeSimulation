@@ -69,7 +69,6 @@ namespace Visualizer.ViewModels
 
         private FastObservableCollection<AgentViewModel> CreateSimulatedField(Landscape landscape)
         {
-            // TODO заменить на обновление только агентов и расстений (для улучшения скорости обновления)
             var columnsCount = landscape.GetColumnsCount();
             var rowsCount = landscape.GetRowsCount();
 
