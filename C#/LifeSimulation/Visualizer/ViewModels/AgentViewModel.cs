@@ -46,7 +46,7 @@ namespace Visualizer.ViewModels
             }
 
             var window = new BrainWindow {DataContext = new AgentBrainViewModel(_agent)};
-            window.ShowDialog();
+            window.Show();
         }
 
         public VisualAgentType Type
