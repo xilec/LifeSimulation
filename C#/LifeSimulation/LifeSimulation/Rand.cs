@@ -4,7 +4,12 @@ namespace LifeSimulation
 {
     public static class Rand
     {
-         private static Random _rand = new Random();
+        private static Random _rand = new Random();
+
+        public static void ReinitializeRandom(int seed)
+        {
+            _rand = new Random(seed);
+        }
 
         public static double GetSRand()
         {
