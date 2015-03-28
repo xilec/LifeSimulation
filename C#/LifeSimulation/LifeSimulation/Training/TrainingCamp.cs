@@ -7,6 +7,7 @@ namespace LifeSimulation.Training
         public static Agent EducateAgent(AgentType agentType)
         {
             var agent = new Agent(agentType);
+            var tmpInputs = agent.Inputs;
 
             ArtificialBrain choosenBrain;
             while(true)
@@ -23,6 +24,7 @@ namespace LifeSimulation.Training
             }           
 
             SetBrain(agent, choosenBrain);
+            agent.Inputs = tmpInputs;
 
             return agent;
         }
