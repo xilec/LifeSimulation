@@ -70,7 +70,6 @@
             <catel:StackGrid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
-                <RowDefinition Height="2*" />
             </catel:StackGrid.RowDefinitions>
             <catel:StackGrid.Resources>
                 <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
@@ -184,17 +183,6 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-            </catel:StackGrid>
-
-            <catel:StackGrid>
-                <catel:StackGrid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
-                </catel:StackGrid.RowDefinitions>
-                <Label Style="{StaticResource Header}">History</Label>
-                <TextBox Margin="0"
-                         Text="{Binding History}"
-                         VerticalScrollBarVisibility="Auto" />
             </catel:StackGrid>
         </catel:StackGrid>
 
