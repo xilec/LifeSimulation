@@ -61,48 +61,20 @@ namespace LifeSimulation
         private void SimulateAgent(Agent agent)
         {
             // Вычисление значений на входе в нейтронную сеть
-            switch (agent.Direction)
-            {
-                case Direction.North:
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, NorthFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, NorthFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, NorthFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, NorthFront, 1);
-                    break;                  
-                case Direction.South:       
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, NorthFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, NorthFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, NorthFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, NorthFront, -1);
-                    break;                  
-                case Direction.West:        
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, WestFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, WestFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, WestFront, 1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, WestFront, 1);
-                    break;                  
-                case Direction.East:        
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_FRONT, WestFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_LEFT, WestFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_RIGTH, WestFront, -1);
-                    Landscape.Percept(agent, SensorInputOffsets.HERB_PROXIMITY, WestFront, -1);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            Landscape.UpdatePerception(agent);
 
             // Выполнение выбранного действия
             var winnerAction = agent.MakeDecision();
             switch (winnerAction)
             {
-                case AgentActions.TurnLeft:
-                case AgentActions.TurnRight:
+                case AgentAction.TurnLeft:
+                case AgentAction.TurnRight:
                     agent.Turn(winnerAction);
                     break;
-                case AgentActions.Move:
+                case AgentAction.Move:
                     Landscape.Move(agent);
                     break;
-                case AgentActions.Eat:
+                case AgentAction.Eat:
                     Eat(agent);
                     break;
                 default:

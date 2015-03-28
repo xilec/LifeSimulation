@@ -40,20 +40,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent.cs" />
-    <Compile Include="AgentActions.cs" />
+    <Compile Include="AgentAction.cs" />
     <Compile Include="AgentType.cs" />
     <Compile Include="Direction.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Rand.cs" />
     <Compile Include="Landscape.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SensorInputOffsets.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Statistics.cs" />
+    <Compile Include="Training\TrainingCamp.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Learning\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

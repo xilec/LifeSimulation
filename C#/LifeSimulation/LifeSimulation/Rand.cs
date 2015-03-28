@@ -2,7 +2,7 @@
 
 namespace LifeSimulation
 {
-    public static class Helpers
+    public static class Rand
     {
          private static Random _rand = new Random();
 
@@ -11,15 +11,15 @@ namespace LifeSimulation
             return _rand.NextDouble();
         }
 
-        public static int GetRand(int x)
+        public static int GetRand(int max)
         {
-            return (int)(GetSRand() * x);
+            return _rand.Next(max);
         }
 
         // Возвращает значения, которые могут принимать веса нейронной сети
         public static int GetWeight()
         {
-            return GetRand(9) - 1;
+            return GetRand(10) - 6;
         }
     }
 }

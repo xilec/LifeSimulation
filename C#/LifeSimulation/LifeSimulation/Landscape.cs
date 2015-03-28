@@ -1,4 +1,5 @@
 ﻿using System;
+using LifeSimulation.Training;
 
 namespace LifeSimulation
 {
@@ -67,7 +68,7 @@ namespace LifeSimulation
             for (int agentIndex = 0; agentIndex < MaxAgents; agentIndex++)
             {
                 var newAgentType = agentIndex < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
-                var newAgent = new Agent(newAgentType);
+                var newAgent = TrainingCamp.EducatAgent(newAgentType);
                 Agents[agentIndex] = newAgent;
                 AddAgent(newAgent);
             }
@@ -104,8 +105,8 @@ namespace LifeSimulation
         {
             while (true)
             {
-                var x = Helpers.GetRand(MaxGrid);
-                var y = Helpers.GetRand(MaxGrid);
+                var x = Rand.GetRand(MaxGrid);
+                var y = Rand.GetRand(MaxGrid);
 
 
                 if (_landscape[PLANT_PLANE][y, x] == null)
@@ -126,11 +127,11 @@ namespace LifeSimulation
 
             do
             {
-                agent.Location.X = Helpers.GetRand(MaxGrid);
-                agent.Location.Y = Helpers.GetRand(MaxGrid);
+                agent.Location.X = Rand.GetRand(MaxGrid);
+                agent.Location.Y = Rand.GetRand(MaxGrid);
             } while (_landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] != null);
 
-            agent.Direction = (Direction)Helpers.GetRand(MaxDirection);
+            agent.Direction = (Direction)Rand.GetRand(MaxDirection);
             _landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] = agent;
         }
 
@@ -276,9 +277,9 @@ namespace LifeSimulation
             var child = agent.DeepClone();
             FindEmptySpot(child);
 
-            if (Helpers.GetSRand() <= 0.2)
+            if (Rand.GetSRand() <= 0.2)
             {
-                child.WeightOI[Helpers.GetRand(Agent.TotalWeights)] = Helpers.GetWeight();
+                child.WeightOI[Rand.GetRand(Agent.TotalWeights)] = Rand.GetWeight();
             }
 
             child.Generation++;
@@ -317,5 +318,37 @@ namespace LifeSimulation
             }
         }
 
+        public void UpdatePerception(Agent agent)
+        {
+            switch (agent.Direction)
+            {
+                case Direction.North:
+                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthFront, 1);
+                    break;
+                case Direction.South:
+                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthFront, -1);
+                    break;
+                case Direction.West:
+                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestFront, 1);
+                    break;
+                case Direction.East:
+                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestFront, -1);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

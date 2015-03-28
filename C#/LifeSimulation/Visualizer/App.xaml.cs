@@ -32,6 +32,10 @@ namespace Visualizer
             var window = new MainWindow();
             window.DataContext = new MainViewModel(serializedLandscapes, simulation.RowsCount, simulation.ColumnsCount);
             window.Show();
+
+            //var window = new BrainWindow();
+            //window.DataContext = new DesignAgentBrainViewModel();
+            //window.Show();
         }
     }
 }

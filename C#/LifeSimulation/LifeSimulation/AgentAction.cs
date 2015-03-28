@@ -1,6 +1,6 @@
 namespace LifeSimulation
 {
-    public enum AgentActions
+    public enum AgentAction
     {
         TurnLeft,   // = 0
         TurnRight,  // = 1

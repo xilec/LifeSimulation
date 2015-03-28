@@ -10,7 +10,7 @@
         FocusManager.FocusedElement="{Binding ElementName=AgesList,
                                               Mode=OneTime}"
         SizeToContent="WidthAndHeight"
-        d:DataContext="{d:DesignInstance Type=viewModels:TestMainViewModel,
+        d:DataContext="{d:DesignInstance Type=viewModels:DesignMainViewModel,
                                          IsDesignTimeCreatable=True}"
         mc:Ignorable="d">
     <Window.Resources>
@@ -90,7 +90,7 @@
                 <TextBox Text="{Binding HerbivoreStats.Deathes, Mode=OneWay}" />
                 <TextBox Text="{Binding CarnivoreStats.Deathes, Mode=OneWay}" />
 
-                <Label>Max ages</Label>
+                <Label>Mamax ages</Label>
                 <TextBox Text="{Binding HerbivoreStats.MaxAges, Mode=OneWay}" />
                 <TextBox Text="{Binding CarnivoreStats.MaxAges, Mode=OneWay}" />
 
@@ -200,6 +200,9 @@
                                                  Mode=OneWay}"
                             BorderThickness="1"
                             Padding="0">
+                        <Border.InputBindings>
+                            <MouseBinding Command="{Binding ShowBrainCommand, Mode=OneTime}" MouseAction="LeftDoubleClick" />
+                        </Border.InputBindings>
                         <Label Margin="0,-7,0,0"
                                HorizontalContentAlignment="Center"
                                VerticalContentAlignment="Center"

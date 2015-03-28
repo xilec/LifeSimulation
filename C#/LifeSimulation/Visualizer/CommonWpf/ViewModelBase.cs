@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Visualizer.Annotations;
 
-namespace Visualizer.ViewModels
+namespace Visualizer.CommonWpf
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {

@@ -1,4 +1,6 @@
-﻿namespace Visualizer.ViewModels
+﻿using Visualizer.CommonWpf;
+
+namespace Visualizer.ViewModels
 {
     public class AgentStatisticsViewModel : ViewModelBase
     {

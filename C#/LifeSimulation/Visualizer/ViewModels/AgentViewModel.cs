@@ -1,9 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using System.Windows.Media;
+using Catel.MVVM;
 using LifeSimulation;
-using Visualizer.Annotations;
+using Visualizer.Views;
+using ViewModelBase = Visualizer.CommonWpf.ViewModelBase;
 
 namespace Visualizer.ViewModels
 {
@@ -11,6 +12,7 @@ namespace Visualizer.ViewModels
     {
         private VisualAgentType _type;
         private readonly Agent _agent;
+        private ICommand _showBrainCommand;
 
         public AgentViewModel(VisualAgentType type)
         {
@@ -21,6 +23,30 @@ namespace Visualizer.ViewModels
         {
             _type = type;
             _agent = agent;
+        }
+
+        public ICommand ShowBrainCommand
+        {
+            get
+            {
+                if (_showBrainCommand != null)
+                {
+                    return _showBrainCommand;
+                }
+
+                return _showBrainCommand = new Command(ShowBrainExecute);
+            }
+        }
+
+        private void ShowBrainExecute()
+        {
+            if (_agent == null)
+            {
+                return;
+            }
+
+            var window = new BrainWindow {DataContext = new AgentBrainViewModel(_agent)};
+            window.ShowDialog();
         }
 
         public VisualAgentType Type
@@ -148,7 +174,9 @@ namespace Visualizer.ViewModels
                     case VisualAgentType.Herbivore:
                     case VisualAgentType.Carnivore:
                         var hint = Type.ToString() + Environment.NewLine;
-                        hint += "Energy: " + _agent.Energy;
+                        hint += "Energy: " + _agent.Energy + Environment.NewLine;
+                        hint += "Last action: " + _agent.LastAction;
+
                         return hint;
                     default:
                         throw new ArgumentOutOfRangeException();

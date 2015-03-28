@@ -69,14 +69,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CommonWpf\ViewModelBase.cs" />
     <Compile Include="LandscapeSerializer.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="ViewModels\AgentBrainViewModel.cs" />
     <Compile Include="ViewModels\AgentStatisticsViewModel.cs" />
     <Compile Include="ViewModels\AgeViewModel.cs" />
     <Compile Include="ViewModels\AgentViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\VisualAgentType.cs" />
+    <Compile Include="Views\BrainWindow.xaml.cs">
+      <DependentUpon>BrainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -84,6 +88,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\BrainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

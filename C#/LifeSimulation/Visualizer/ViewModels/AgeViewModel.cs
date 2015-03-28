@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using Catel.Collections;
 using LifeSimulation;
+using Visualizer.CommonWpf;
 
 namespace Visualizer.ViewModels
 {

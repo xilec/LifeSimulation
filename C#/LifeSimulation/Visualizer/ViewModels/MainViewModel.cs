@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using Catel.Collections;
 using LifeSimulation;
+using Visualizer.CommonWpf;
 
 namespace Visualizer.ViewModels
 {
@@ -112,11 +113,11 @@ namespace Visualizer.ViewModels
         public int GridRows { get; protected set; }
     }
 
-    class TestMainViewModel : MainViewModel
+    class DesignMainViewModel : MainViewModel
     {
         public const int GridSize = 10;
 
-        public TestMainViewModel() : base(GetTestLandscapes(), GridSize, GridSize)
+        public DesignMainViewModel() : base(GetTestLandscapes(), GridSize, GridSize)
         {
         }
 
