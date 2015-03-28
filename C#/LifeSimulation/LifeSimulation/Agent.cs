@@ -132,7 +132,7 @@ namespace LifeSimulation
                 // Перемножаем значения на входе выходной ячейки на соответствующие веса
                 for (int inIndex = 0; inIndex < MaxInputs; inIndex++)
                 {
-                    Outputs[outIndex] += (Inputs[inIndex]*WeightOI[(outIndex*MaxInputs) + inIndex]);
+                    Outputs[outIndex] += Inputs[inIndex]*WeightOI[outIndex*MaxInputs + inIndex];
                 }
             }
             var largest = Int32.MinValue;
