@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Input;
+using Catel.MVVM;
 using LifeSimulation;
-using Visualizer.CommonWpf;
+using ViewModelBase = Visualizer.CommonWpf.ViewModelBase;
 
 namespace Visualizer.ViewModels
 {
@@ -21,7 +23,20 @@ namespace Visualizer.ViewModels
 
         public int[] Brain
         {
-            get { return _agent.WeightOI; }
+            get
+            {
+                var weight = _agent.WeightOI;
+                var result = new int[weight.Length];
+                for (int outIndex = 0; outIndex < OutputsCount; outIndex++)
+                {
+                    for (int inIndex = 0; inIndex < InputsCount; inIndex++)
+                    {
+                        result[inIndex * Agent.MaxOutputs + outIndex] = weight[outIndex * Agent.MaxInputs + inIndex];
+                    }
+                }
+
+                return result;
+            }
         }
 
         public int[] Bias
