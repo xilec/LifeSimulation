@@ -159,7 +159,7 @@ namespace Visualizer.ViewModels
         public static List<string> GetTestLandscapes()
         {
             var list = new List<string>();
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var landscape = Landscape.Create();
                 list.Add(LandscapeSerializer.Serialize(landscape));
