@@ -4,7 +4,7 @@ namespace LifeSimulation.Training
 {
     public static class TrainingCamp
     {
-        public static Agent EducatAgent(AgentType agentType)
+        public static Agent EducateAgent(AgentType agentType)
         {
             var agent = new Agent(agentType);
 

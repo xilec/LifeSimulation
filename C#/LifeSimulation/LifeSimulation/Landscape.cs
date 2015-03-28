@@ -68,7 +68,7 @@ namespace LifeSimulation
             for (int agentIndex = 0; agentIndex < MaxAgents; agentIndex++)
             {
                 var newAgentType = agentIndex < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
-                var newAgent = TrainingCamp.EducatAgent(newAgentType);
+                var newAgent = TrainingCamp.EducateAgent(newAgentType);
                 Agents[agentIndex] = newAgent;
                 AddAgent(newAgent);
             }

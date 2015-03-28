@@ -25,7 +25,18 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </catel:StackGrid.RowDefinitions>
+
+        <Label>Name:</Label>
+        <Label Content="{Binding Name}" />
+        <catel:EmptyRow />
+
+        <Label>Type</Label>
+        <Label Content="{Binding Type}" />
+        <catel:EmptyRow />
+
+
         <catel:EmptyCell />
         <Label>Perceptions</Label>
         <catel:StackGrid>

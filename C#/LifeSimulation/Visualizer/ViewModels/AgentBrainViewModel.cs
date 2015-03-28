@@ -42,6 +42,11 @@ namespace Visualizer.ViewModels
         {
             get { return _agent.Action; }
         }
+
+        public string Name
+        {
+            get { return _agent.Name; }
+        }
     }
 
     public class DesignAgentBrainViewModel : AgentBrainViewModel

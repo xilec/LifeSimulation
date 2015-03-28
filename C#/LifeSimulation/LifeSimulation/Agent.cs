@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace LifeSimulation
 {
+    [DebuggerDisplay("{Name} X = {Location.X} Y = {Location.Y}")]
     public class Agent
     {
         private const int MaxFoodEnergy = 120;
@@ -11,6 +13,9 @@ namespace LifeSimulation
         public const int MaxOutputs = 4;
         public const int TotalWeights = MaxInputs*MaxOutputs;
 
+        private static int _herbivoresCount = 0;
+        private static int _carnivoresCount = 0;
+
         private Agent()
         {
             Location = new Location(-1, -1);
@@ -18,6 +23,7 @@ namespace LifeSimulation
 
         public Agent(AgentType type)
         {
+            Name = CreateName(type);
             Type = type;
             Energy = MaxEnergy / 2;
             Age = 0;
@@ -26,6 +32,22 @@ namespace LifeSimulation
             Direction = Direction.West;
         }
 
+        private string CreateName(AgentType type)
+        {
+            switch (type)
+            {
+                case AgentType.Herbivore:
+                    _herbivoresCount++;
+                    return "H" + _herbivoresCount.ToString();
+                case AgentType.Carnivore:
+                    _carnivoresCount++;
+                    return "C" + _carnivoresCount.ToString();
+                default:
+                    throw new ArgumentOutOfRangeException("type");
+            }
+        }
+
+        public string Name { get; private set; }
         public readonly AgentType Type;
         public int Energy;
         public int Parent;

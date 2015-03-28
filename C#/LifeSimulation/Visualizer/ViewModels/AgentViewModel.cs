@@ -185,9 +185,14 @@ namespace Visualizer.ViewModels
             }
         }
 
+        public string Name
+        {
+            get { return _agent.Name; }
+        }
+
         public override string ToString()
         {
-            var result = string.Format("{0}   X: {1}\tY: {2}", Type, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
+            var result = string.Format("{0}   X: {1}\tY: {2}", _agent.Name, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
             return result;
         }
     }
