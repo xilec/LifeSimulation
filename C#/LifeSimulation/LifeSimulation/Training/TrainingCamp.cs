@@ -120,7 +120,7 @@ namespace LifeSimulation.Training
             public double Scores { get; set; }
         }
 
-        private static int[] CreateInputs(
+        public static int[] CreateInputs(
             int herbivoresOnFront = 0,
             int carnivoresOnFront = 0,
             int plantsOnFront = 0,

@@ -310,7 +310,8 @@ namespace LifeSimulation
                     var yoff = Clip(agentLocation.Y + (offset[0]*neg));
 
                     // Если в полученной точке что-то есть, то увеличиваем счетчик входов
-                    if (plane[yoff, xoff] != null)
+                    var agentOnPlane = plane[yoff, xoff];
+                    if (agentOnPlane != null && agentOnPlane != agent)
                     {
                         agent.Inputs[inputOffset + planeIndex]++;
                     }
@@ -324,27 +325,27 @@ namespace LifeSimulation
             {
                 case Direction.North:
                     Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthLeft, 1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthRight, 1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthProx, 1);
                     break;
                 case Direction.South:
                     Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthLeft, -1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthRight, -1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthProx, -1);
                     break;
                 case Direction.West:
                     Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestFront, 1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestLeft, 1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestRight, 1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestProx, 1);
                     break;
                 case Direction.East:
                     Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestFront, -1);
+                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestLeft, -1);
+                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestRight, -1);
+                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestProx, -1);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
