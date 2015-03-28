@@ -84,6 +84,12 @@ namespace LifeSimulation
             // Вычитаем "потраченную" энергию
             agent.Energy -= agent.Type == AgentType.Herbivore ? 2 : 1;
 
+            // Если агент имеет достаточно энергии для размножения, то позволяем ему сделать это
+            if (agent.Energy > (ReproduceEnergyFactor * Agent.MaxEnergy))
+            {
+                Landscape.ReproduceAgent(agent);
+            }
+
             // Если энергия агента меньше или равна нулю - агент умирает
             // В противом случае проверяем, чне является ли этот агент самым старым
             if (agent.Energy <= 0)
@@ -170,12 +176,6 @@ namespace LifeSimulation
                         }
                     }
                 }
-            }
-
-            // Если агент имеет достаточно энергии для размножения, то позволяем ему сделать это
-            if (agent.Energy > (ReproduceEnergyFactor * Agent.MaxEnergy))
-            {
-                Landscape.ReproduceAgent(agent);
             }
         }
     }
