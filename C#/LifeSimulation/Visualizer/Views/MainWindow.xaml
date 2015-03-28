@@ -47,7 +47,7 @@
                 Ages
             </Label>
             <ListBox Name="AgesList"
-                     Width="200"
+                     Width="120"
                      IsSynchronizedWithCurrentItem="True"
                      ItemsSource="{Binding Ages,
                                            Mode=OneWay}"
