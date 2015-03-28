@@ -55,7 +55,9 @@
                      SelectedItem="{Binding SelectedAge}">
                 <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type viewModels:AgeViewModel}">
-                        <Label Content="{Binding Number}" />
+                        <Label Margin="0"
+                               Content="{Binding Number}"
+                               Padding="0" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
