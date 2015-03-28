@@ -22,11 +22,11 @@ namespace Visualizer
             var simulation = new Simulation();
 
             var serializedLandscapes = new List<string>();
-            serializedLandscapes.Add(LandscapeSerializer.Serialize(simulation.Landscape));
             for (int i = 0; i < 100; i++)
             {
-                simulation.Simulate();
+                simulation.EstimateState();
                 serializedLandscapes.Add(LandscapeSerializer.Serialize(simulation.Landscape));
+                simulation.UpdateState();
             }
 
             var window = new MainWindow();

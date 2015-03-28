@@ -37,7 +37,7 @@ namespace LifeSimulation
         public int[] WeightOI = new int[TotalWeights];
         public int[] BiasO = new int[MaxOutputs];
         public int[] Outputs = new int[MaxOutputs];
-        public AgentAction LastAction;
+        public AgentAction Action;
 
         public void Eat()
         {
@@ -88,7 +88,7 @@ namespace LifeSimulation
             return new Agent();
         }
 
-        public AgentAction MakeDecision()
+        public void MakeDecision()
         {
             // Вычисление в сети
             for (int outIndex = 0; outIndex < MaxOutputs; outIndex++)
@@ -115,8 +115,7 @@ namespace LifeSimulation
                 }
             }
             var action = (AgentAction)winnerOutput;
-            LastAction = action;
-            return action;
+            Action = action;
         }
     }
 }

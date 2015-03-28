@@ -38,9 +38,9 @@ namespace Visualizer.ViewModels
             get { return _agent.Outputs; }
         }
 
-        public AgentAction LastAction
+        public AgentAction Action
         {
-            get { return _agent.LastAction; }
+            get { return _agent.Action; }
         }
     }
 
@@ -56,7 +56,7 @@ namespace Visualizer.ViewModels
             agent.Inputs = Enumerable.Range(0, Agent.MaxInputs).ToArray();
             agent.WeightOI = Enumerable.Range(0, Agent.TotalWeights).ToArray();
             agent.Outputs = Enumerable.Range(0, Agent.MaxOutputs).ToArray();
-            agent.LastAction = AgentAction.Eat;
+            agent.Action = AgentAction.Eat;
 
             return agent;
         }

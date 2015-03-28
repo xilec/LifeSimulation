@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LifeSimulation.Training
 {
@@ -40,9 +39,9 @@ namespace LifeSimulation.Training
             foreach (var test in tests)
             {
                 agent.Inputs = test.Inputs;
-                var action = agent.MakeDecision();
+                agent.MakeDecision();
 
-                scores += action == test.ExpectedAction ? test.Scores : 0;
+                scores += agent.Action == test.ExpectedAction ? test.Scores : 0;
             }
 
             return scores;

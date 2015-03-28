@@ -19,8 +19,6 @@ namespace LifeSimulation
         public static int[][] WestRight = { new[] { -2, 0 }, new[] { -2, -1 } };
         public static int[][] WestProx = { new[] { 1, 0 }, new[] { 1, -1 }, new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 } };
 
-        //private static Agent _bestAgent = new Agent();
-
         public Landscape Landscape = Landscape.Create();
 
         public Simulation()
@@ -39,7 +37,20 @@ namespace LifeSimulation
 
         public void Simulate()
         {
-            var agentTypes = new[] {AgentType.Herbivore, AgentType.Carnivore};
+
+            DoAgentsAction(SimulateAgent);
+        }
+
+        private void SimulateAgent(Agent agent)
+        {
+            EstimateAgentsState(agent);
+
+            UpdateAgentsState(agent);
+        }
+
+        private void DoAgentsAction(Action<Agent> action)
+        {
+            var agentTypes = new[] { AgentType.Herbivore, AgentType.Carnivore };
             foreach (var type in agentTypes)
             {
                 for (int i = 0; i < Landscape.Agents.Length; i++)
@@ -52,24 +63,38 @@ namespace LifeSimulation
 
                     if (agent.Type == type)
                     {
-                        SimulateAgent(agent);
+                        action(agent);
                     }
                 }
-            }
+            }            
         }
 
-        private void SimulateAgent(Agent agent)
+        public void EstimateState()
+        {
+            DoAgentsAction(EstimateAgentsState);
+        }
+
+        public void UpdateState()
+        {
+            DoAgentsAction(UpdateAgentsState);
+        }
+
+        private void EstimateAgentsState(Agent agent)
         {
             // Вычисление значений на входе в нейтронную сеть
             Landscape.UpdatePerception(agent);
 
             // Выполнение выбранного действия
-            var winnerAction = agent.MakeDecision();
-            switch (winnerAction)
+            agent.MakeDecision();
+        }
+
+        private void UpdateAgentsState(Agent agent)
+        {
+            switch (agent.Action)
             {
                 case AgentAction.TurnLeft:
                 case AgentAction.TurnRight:
-                    agent.Turn(winnerAction);
+                    agent.Turn(agent.Action);
                     break;
                 case AgentAction.Move:
                     Landscape.Move(agent);
@@ -85,7 +110,7 @@ namespace LifeSimulation
             agent.Energy -= agent.Type == AgentType.Herbivore ? 2 : 1;
 
             // Если агент имеет достаточно энергии для размножения, то позволяем ему сделать это
-            if (agent.Energy > (ReproduceEnergyFactor * Agent.MaxEnergy))
+            if (agent.Energy > (ReproduceEnergyFactor*Agent.MaxEnergy))
             {
                 Landscape.ReproduceAgent(agent);
             }

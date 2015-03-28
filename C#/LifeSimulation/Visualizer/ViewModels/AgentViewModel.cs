@@ -175,7 +175,7 @@ namespace Visualizer.ViewModels
                     case VisualAgentType.Carnivore:
                         var hint = Type.ToString() + Environment.NewLine;
                         hint += "Energy: " + _agent.Energy.ToString() + Environment.NewLine;
-                        hint += "Last action: " + _agent.LastAction + Environment.NewLine;;
+                        hint += "Action: " + _agent.Action + Environment.NewLine;;
                         hint += "X: " + _agent.Location.X.ToString() + " Y: " + _agent.Location.Y.ToString();
 
                         return hint;
