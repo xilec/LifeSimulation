@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace LifeSimulation
 {
@@ -16,6 +17,7 @@ namespace LifeSimulation
         private static int _herbivoresCount = 0;
         private static int _carnivoresCount = 0;
 
+        [JsonConstructor]
         private Agent()
         {
             Location = new Location(-1, -1);
@@ -47,8 +49,9 @@ namespace LifeSimulation
             }
         }
 
+        [JsonProperty]
         public string Name { get; private set; }
-        public readonly AgentType Type;
+        public AgentType Type;
         public int Energy;
         public int Parent;
         public int Age;
@@ -91,6 +94,14 @@ namespace LifeSimulation
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public Agent GetChild()
+        {
+            var child = DeepClone();
+            child.Name = CreateName(Type);
+
+            return child;
         }
 
         public Agent DeepClone()

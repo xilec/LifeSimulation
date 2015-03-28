@@ -173,7 +173,8 @@ namespace Visualizer.ViewModels
                         return "Plant";
                     case VisualAgentType.Herbivore:
                     case VisualAgentType.Carnivore:
-                        var hint = Type.ToString() + Environment.NewLine;
+                        var hint = _agent.Name + Environment.NewLine;
+                        hint += _agent.Type.ToString() + Environment.NewLine;
                         hint += "Energy: " + _agent.Energy.ToString() + Environment.NewLine;
                         hint += "Action: " + _agent.Action + Environment.NewLine;;
                         hint += "X: " + _agent.Location.X.ToString() + " Y: " + _agent.Location.Y.ToString();
@@ -192,7 +193,7 @@ namespace Visualizer.ViewModels
 
         public override string ToString()
         {
-            var result = string.Format("{0}   X: {1}\tY: {2}", _agent.Name, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
+            var result = string.Format("{0}\tX: {1}\tY: {2}", _agent.Name, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
             return result;
         }
     }

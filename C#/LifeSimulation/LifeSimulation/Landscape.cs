@@ -132,7 +132,7 @@ namespace LifeSimulation
             } while (_landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] != null);
 
             agent.Direction = (Direction)Rand.GetRand(MaxDirection);
-            _landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] = agent;
+            SetAgentInPosition(agent);
         }
 
         /// <summary>
@@ -274,7 +274,8 @@ namespace LifeSimulation
                 return;
             }
 
-            var child = agent.DeepClone();
+            var child = agent.GetChild();
+            Agents[emptyAgentIndex] = child;
             FindEmptySpot(child);
 
             if (Rand.GetSRand() <= 0.2)
