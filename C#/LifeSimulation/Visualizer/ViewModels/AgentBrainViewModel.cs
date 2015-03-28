@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Runtime.InteropServices;
 using LifeSimulation;
 using Visualizer.CommonWpf;
 
@@ -23,6 +24,11 @@ namespace Visualizer.ViewModels
             get { return _agent.WeightOI; }
         }
 
+        public int[] Bias
+        {
+            get { return _agent.BiasO; }
+        }
+
         public int InputsCount
         {
             get { return Inputs.Length; }
@@ -33,7 +39,7 @@ namespace Visualizer.ViewModels
             get { return Outputs.Length; }
         }
 
-    public int[] Outputs
+        public int[] Outputs
         {
             get { return _agent.Outputs; }
         }
@@ -46,6 +52,19 @@ namespace Visualizer.ViewModels
         public string Name
         {
             get { return _agent.Name; }
+        }
+
+        public AgentType Type
+        {
+            get { return _agent.Type; }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return string.Format("{0}\tX: {1}\tY: {2}\tEnergy: {3}", _agent.Name, _agent.Location.X, _agent.Location.Y, _agent.Energy);
+            }
         }
     }
 

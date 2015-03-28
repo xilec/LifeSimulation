@@ -23,5 +23,10 @@ namespace Visualizer.Views
         {
             InitializeComponent();
         }
+
+        private void CommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

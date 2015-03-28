@@ -193,7 +193,7 @@ namespace Visualizer.ViewModels
 
         public override string ToString()
         {
-            var result = string.Format("{0}\tX: {1}\tY: {2}", _agent.Name, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
+            var result = string.Format("{0}\tX: {1}\tY: {2}\tEnergy: {3}", _agent.Name, _agent.Location.X.ToString(), _agent.Location.Y.ToString(), _agent.Energy);
             return result;
         }
     }

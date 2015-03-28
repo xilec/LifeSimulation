@@ -8,12 +8,24 @@
         Title="Brain Visualization"
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
+        SnapsToDevicePixels="True"
         WindowStartupLocation="CenterScreen"
         d:DesignSource="{d:DesignInstance Type=viewModels:DesignAgentBrainViewModel,
                                           IsDesignTimeCreatable=True}"
         d:Height="300"
         d:Width="600"
         mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <RoutedCommand x:Key="CloseCommand" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource CloseCommand}" Executed="CommandBinding_OnExecuted" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{StaticResource CloseCommand}" />
+    </Window.InputBindings>
     <catel:StackGrid>
         <catel:StackGrid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -26,19 +38,21 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </catel:StackGrid.RowDefinitions>
 
-        <Label>Name:</Label>
-        <Label Content="{Binding Name}" />
+        <catel:StackGrid Grid.ColumnSpan="3">
+            <catel:StackGrid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+            </catel:StackGrid.ColumnDefinitions>
+            <Label Content="{Binding Description}" />
+        </catel:StackGrid>
         <catel:EmptyRow />
-
-        <Label>Type</Label>
-        <Label Content="{Binding Type}" />
-        <catel:EmptyRow />
-
 
         <catel:EmptyCell />
-        <Label>Perceptions</Label>
+        <Label>Input</Label>
         <catel:StackGrid>
             <catel:StackGrid.ColumnDefinitions>
                 <ColumnDefinition />
@@ -51,6 +65,25 @@
             <Label>Move</Label>
             <Label>Eat</Label>
         </catel:StackGrid>
+
+        <Label>Bias</Label>
+        <catel:EmptyCell />
+        <Border BorderBrush="Black" BorderThickness="1">
+            <ItemsControl ItemsSource="{Binding Bias, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding OutputsCount, Mode=OneTime}" Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Content="{Binding }" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
 
         <StackPanel Orientation="Vertical">
             <Label>Herbivore on front</Label>
@@ -122,7 +155,7 @@
         <catel:EmptyCell />
         <Label HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               Content="{Binding LastAction,
+               Content="{Binding Action,
                                  Mode=OneTime}" />
     </catel:StackGrid>
 </Window>
