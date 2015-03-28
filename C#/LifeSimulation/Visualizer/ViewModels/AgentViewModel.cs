@@ -174,14 +174,21 @@ namespace Visualizer.ViewModels
                     case VisualAgentType.Herbivore:
                     case VisualAgentType.Carnivore:
                         var hint = Type.ToString() + Environment.NewLine;
-                        hint += "Energy: " + _agent.Energy + Environment.NewLine;
-                        hint += "Last action: " + _agent.LastAction;
+                        hint += "Energy: " + _agent.Energy.ToString() + Environment.NewLine;
+                        hint += "Last action: " + _agent.LastAction + Environment.NewLine;;
+                        hint += "X: " + _agent.Location.X.ToString() + " Y: " + _agent.Location.Y.ToString();
 
                         return hint;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            var result = string.Format("{0} X: {1}\tY: {2}", Type, _agent.Location.X.ToString(), _agent.Location.Y.ToString());
+            return result;
         }
     }
 }

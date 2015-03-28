@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Catel.Collections;
 using LifeSimulation;
@@ -15,6 +17,8 @@ namespace Visualizer.ViewModels
         {
             Number = number;
             _serializedLandscape = serializedLandscape;
+
+            AliveAgents = new FastObservableCollection<AgentViewModel>();
         }
 
         public int Number
@@ -43,10 +47,13 @@ namespace Visualizer.ViewModels
                 CarnivoreStats = FillStatistics(AgentType.Carnivore, landscape.Statistics);
                 OnPropertyChanged("HerbivoreStats");
                 OnPropertyChanged("CarnivoreStats");
+                OnPropertyChanged("AliveAgents");
 
                 return result;
             }
         }
+
+        public FastObservableCollection<AgentViewModel> AliveAgents { get; private set; }
 
         private static AgentStatisticsViewModel FillStatistics(AgentType agentType, Statistics stats)
         {
@@ -85,6 +92,7 @@ namespace Visualizer.ViewModels
                 cells[cellIndex] = new AgentViewModel(VisualAgentType.Plant);
             }
 
+            var agents = new List<AgentViewModel>(landscape.Agents.Length);
             foreach (var agent in landscape.Agents)
             {
                 if (agent == null)
@@ -104,8 +112,12 @@ namespace Visualizer.ViewModels
                         break;
                 }
 
-                cells[cellIndex] = new AgentViewModel(type, agent);
+                var agentViewModel = new AgentViewModel(type, agent);
+                cells[cellIndex] = agentViewModel;
+                agents.Add(agentViewModel);
             }
+
+            AliveAgents.ReplaceRange(agents);
 
             return cells;
         }
