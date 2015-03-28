@@ -49,5 +49,28 @@ namespace LifeSimulation.Tests
             herbivore.Inputs.ShouldBeEqualTo(expectedHerbivoreInputs);
             carnivore.Inputs.ShouldBeEqualTo(expectedCarnivoreInputs);
         }
+
+        [Test]
+        public void PlantOnFront()
+        {
+            var expectedCarnivoreInputs = TrainingCamp.CreateInputs(plantsOnProximity: 1);
+
+            var landscape = Landscape.CreateTest();
+
+            var carnivore = new Agent(AgentType.Carnivore);
+            carnivore.Direction = Direction.East;
+            carnivore.Location = new Location(0, 2);
+            landscape.Agents[0] = carnivore;
+            landscape.SetAgentInPosition(carnivore);
+
+            var plant = Agent.CreatePlant();
+            plant.Location = new Location(1, 3);
+            landscape.Plants[0] = plant;
+            landscape.SetPlantToPosition(plant);
+
+            landscape.UpdatePerception(carnivore);
+
+            carnivore.Inputs.ShouldBeEqualTo(expectedCarnivoreInputs);
+        }
     }
 }

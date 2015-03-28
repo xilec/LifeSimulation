@@ -108,7 +108,6 @@ namespace LifeSimulation
                 var x = Rand.GetRand(MaxGrid);
                 var y = Rand.GetRand(MaxGrid);
 
-
                 if (_landscape[PLANT_PLANE][y, x] == null)
                 {
                     plant.Location.X = x;
@@ -168,6 +167,11 @@ namespace LifeSimulation
             // Помещаем агента в новое место
             var type = (int)agent.Type;
             _landscape[type][agent.Location.Y, agent.Location.X] = agent;
+        }
+
+        public void SetPlantToPosition(Agent plant)
+        {
+            _landscape[PLANT_PLANE][plant.Location.Y, plant.Location.X] = plant;
         }
 
         public void Move(Agent agent)
