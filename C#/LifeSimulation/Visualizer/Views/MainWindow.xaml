@@ -11,6 +11,7 @@
                                               Mode=OneTime}"
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
+        SnapsToDevicePixels="True"
         d:DataContext="{d:DesignInstance Type=viewModels:DesignMainViewModel,
                                          IsDesignTimeCreatable=True}"
         mc:Ignorable="d">
