@@ -78,7 +78,7 @@ namespace Visualizer.ViewModels
         {
             get
             {
-                return string.Format("{0}\tX: {1}\tY: {2}\tEnergy: {3}", _agent.Name, _agent.Location.X, _agent.Location.Y, _agent.Energy);
+                return string.Format("{0}\tX: {1}\tY: {2}\tEnergy: {3}\tAge: {4}\tGeneration: {5}", _agent.Name, _agent.Location.X, _agent.Location.Y, _agent.Energy, _agent.Age, _agent.Generation);
             }
         }
     }

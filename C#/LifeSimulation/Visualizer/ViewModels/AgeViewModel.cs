@@ -40,7 +40,7 @@ namespace Visualizer.ViewModels
         {
             get
             {
-                var landscape = LandscapeSerializer.Deserialize(_serializedLandscape);
+                var landscape = GetLandscape();
                 var result = CreateSimulatedField(landscape);
 
                 HerbivoreStats = FillStatistics(AgentType.Herbivore, landscape.Statistics);
@@ -51,6 +51,11 @@ namespace Visualizer.ViewModels
 
                 return result;
             }
+        }
+
+        public Landscape GetLandscape()
+        {
+            return LandscapeSerializer.Deserialize(_serializedLandscape);
         }
 
         public FastObservableCollection<AgentViewModel> AliveAgents { get; private set; }

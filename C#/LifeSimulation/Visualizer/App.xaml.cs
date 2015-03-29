@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,21 +20,8 @@ namespace Visualizer
     {
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            // Set pseudo random for tests
-            // Rand.ReinitializeRandom(1);
-
-            var simulation = new Simulation();
-
-            var serializedLandscapes = new List<string>();
-            for (int i = 0; i < 1000; i++)
-            {
-                simulation.EstimateState();
-                serializedLandscapes.Add(LandscapeSerializer.Serialize(simulation.Landscape));
-                simulation.UpdateState();
-            }
-
             var window = new MainWindow();
-            window.DataContext = new MainViewModel(serializedLandscapes, simulation.RowsCount, simulation.ColumnsCount);
+            window.DataContext = new MainViewModel();
             Application.Current.MainWindow = window;
             window.ShowDialog();
         }

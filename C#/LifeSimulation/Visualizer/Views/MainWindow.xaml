@@ -42,11 +42,22 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </catel:StackGrid.RowDefinitions>
-            <Label Margin="0"
-                   Padding="0"
-                   Style="{StaticResource Header}">
-                Ages
-            </Label>
+            <catel:StackGrid>
+                <catel:StackGrid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </catel:StackGrid.ColumnDefinitions>
+                <Label Margin="0"
+                       Padding="0"
+                       Style="{StaticResource Header}">
+                    Ages
+                </Label>
+                <TextBlock Text=" (" />
+                <TextBlock Text="{Binding Ages.Count, Mode=OneWay}" />
+                <TextBlock Text=")" />
+            </catel:StackGrid>
             <ListBox Name="AgesList"
                      Width="120"
                      IsSynchronizedWithCurrentItem="True"
@@ -71,6 +82,7 @@
                                                Mode=OneWay}"
                          RowSpan="2">
             <catel:StackGrid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </catel:StackGrid.RowDefinitions>
@@ -168,6 +180,15 @@
                         <Label>- Carnivore</Label>
                     </catel:StackGrid>
                 </catel:StackGrid>
+            </catel:StackGrid>
+
+            <catel:StackGrid>
+                <catel:StackGrid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </catel:StackGrid.ColumnDefinitions>
+                <Button Command="{Binding ElementName=_self, Path=DataContext.ShowBestHerbivoreCommand, Mode=OneWay}">The best herbivore</Button>
+                <Button Command="{Binding ElementName=_self, Path=DataContext.ShowBestCarnivoreCommand, Mode=OneWay}">The best carnivore</Button>
             </catel:StackGrid>
 
             <catel:StackGrid>
