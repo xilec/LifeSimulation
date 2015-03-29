@@ -1,10 +1,14 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace LifeSimulation
 {
     public class Statistics
     {
+        [JsonProperty]
         private readonly Dictionary<AgentType, Agent> _agentsMaxGen = new Dictionary<AgentType, Agent>();
+
+        [JsonProperty]
         private readonly Dictionary<AgentType, Agent> _agentsMaxAge = new Dictionary<AgentType, Agent>();
 
         public readonly Dictionary<AgentType, int> AgentTypeCounts = new Dictionary<AgentType, int>
