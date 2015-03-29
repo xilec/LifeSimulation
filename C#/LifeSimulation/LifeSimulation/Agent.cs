@@ -7,7 +7,7 @@ namespace LifeSimulation
     [DebuggerDisplay("{Name} X = {Location.X} Y = {Location.Y}")]
     public class Agent
     {
-        private const int MaxFoodEnergy = 120;
+        private const int MaxFoodEnergy = 110;
         public const int MaxEnergy = 200;
 
         public const int MaxInputs = 12;
