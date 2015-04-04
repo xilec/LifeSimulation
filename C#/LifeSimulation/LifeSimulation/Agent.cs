@@ -76,22 +76,22 @@ namespace LifeSimulation
             }
         }
 
-        public void Turn(AgentAction action)
+        public void Turn()
         {
             // В зависимости от направления поворота агента вычисляем новое направление движения
             switch (Direction)
             {
                 case Direction.North:
-                    Direction = action == AgentAction.TurnLeft ? Direction.West : Direction.East;
+                    Direction = Action == AgentAction.TurnLeft ? Direction.West : Direction.East;
                     break;
                 case Direction.South:
-                    Direction = action == AgentAction.TurnLeft ? Direction.East : Direction.West;
+                    Direction = Action == AgentAction.TurnLeft ? Direction.East : Direction.West;
                     break;
                 case Direction.West:
-                    Direction = action == AgentAction.TurnLeft ? Direction.North : Direction.South;
+                    Direction = Action == AgentAction.TurnLeft ? Direction.North : Direction.South;
                     break;
                 case Direction.East:
-                    Direction = action == AgentAction.TurnLeft ? Direction.South : Direction.North;
+                    Direction = Action == AgentAction.TurnLeft ? Direction.South : Direction.North;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

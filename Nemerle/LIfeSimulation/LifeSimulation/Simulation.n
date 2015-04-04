@@ -94,8 +94,8 @@ namespace LifeSimulation
         {
             match(agent.Action)
             {
-                | TurnLeft  => agent.Turn(agent.Action);
-                | TurnRight => agent.Turn(agent.Action);
+                | TurnLeft  => agent.Turn();
+                | TurnRight => agent.Turn();
                 | Move => Landscape.Move(agent);
                 | Eat => Eat(agent);
                 | _ => throw ArgumentOutOfRangeException()

@@ -84,10 +84,10 @@ namespace LifeSimulation
             }
         }
         
-        public Turn(action : AgentAction) : void
+        public Turn() : void
         {
             Direction = 
-                match((Direction, action))
+                match((Direction, Action))
                 {
                     | (North, TurnLeft)  => West;
                     | (North, TurnRight) => East;

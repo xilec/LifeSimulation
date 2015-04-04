@@ -84,7 +84,7 @@ namespace LifeSimulation
             {
                 case AgentAction.TurnLeft:
                 case AgentAction.TurnRight:
-                    agent.Turn(agent.Action);
+                    agent.Turn();
                     break;
                 case AgentAction.Move:
                     Landscape.Move(agent);
