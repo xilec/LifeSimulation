@@ -1,0 +1,318 @@
+﻿<Window x:Class="Visualizer.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:catel="http://catel.codeplex.com"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Visualizer.ViewModels"
+        Name="_self"
+        Title="Life simulation"
+        FocusManager.FocusedElement="{Binding ElementName=AgesList,
+                                              Mode=OneTime}"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        SnapsToDevicePixels="True"
+        d:DataContext="{d:DesignInstance Type=viewModels:DesignMainViewModel,
+                                         IsDesignTimeCreatable=True}"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <Style x:Key="Header" TargetType="Label">
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="4" />
+        </Style>
+    </Window.Resources>
+    <Grid Margin="4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+
+        <catel:StackGrid MaxHeight="{Binding ElementName=GameField, Path=ActualHeight, Mode=OneWay}">
+            <catel:StackGrid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </catel:StackGrid.RowDefinitions>
+            <catel:StackGrid>
+                <catel:StackGrid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </catel:StackGrid.ColumnDefinitions>
+                <Label Margin="0"
+                       Padding="0"
+                       Style="{StaticResource Header}">
+                    Ages
+                </Label>
+                <TextBlock Text=" (" />
+                <TextBlock Text="{Binding Ages.Count, Mode=OneWay}" />
+                <TextBlock Text=")" />
+            </catel:StackGrid>
+            <ListBox Name="AgesList"
+                     Width="120"
+                     IsSynchronizedWithCurrentItem="True"
+                     ItemsSource="{Binding Ages,
+                                           Mode=OneWay}"
+                     SelectedItem="{Binding SelectedAge}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:AgeViewModel}">
+                        <Label Margin="0"
+                               Content="{Binding Number}"
+                               Padding="0" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </catel:StackGrid>
+
+        <catel:StackGrid MaxHeight="{Binding ElementName=GameField,
+                                             Path=ActualHeight,
+                                             Mode=OneWay}"
+                         Column="2"
+                         DataContext="{Binding Path=SelectedAge,
+                                               Mode=OneWay}"
+                         RowSpan="2">
+            <catel:StackGrid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </catel:StackGrid.RowDefinitions>
+            <catel:StackGrid.Resources>
+                <Style BasedOn="{StaticResource {x:Type TextBox}}" TargetType="TextBox">
+                    <Setter Property="IsReadOnly" Value="True" />
+                </Style>
+            </catel:StackGrid.Resources>
+
+            <catel:StackGrid Name="Info">
+                <catel:StackGrid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </catel:StackGrid.ColumnDefinitions>
+                <catel:StackGrid>
+                    <catel:StackGrid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </catel:StackGrid.ColumnDefinitions>
+                    <catel:StackGrid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </catel:StackGrid.RowDefinitions>
+
+                    <Label Style="{StaticResource Header}">Current statistics</Label>
+
+                    <Label>Herbivores</Label>
+                    <Label>Carnivores</Label>
+
+                    <Label>Count</Label>
+                    <TextBox Text="{Binding HerbivoreStats.Count, Mode=OneWay}" />
+                    <TextBox Text="{Binding CarnivoreStats.Count, Mode=OneWay}" />
+
+
+                    <Label>Birthes</Label>
+                    <TextBox Text="{Binding HerbivoreStats.Reproductions, Mode=OneWay}" />
+                    <TextBox Text="{Binding CarnivoreStats.Reproductions, Mode=OneWay}" />
+
+                    <Label>Deathes</Label>
+                    <TextBox Text="{Binding HerbivoreStats.Deathes, Mode=OneWay}" />
+                    <TextBox Text="{Binding CarnivoreStats.Deathes, Mode=OneWay}" />
+
+                    <Label>Mamax ages</Label>
+                    <TextBox Text="{Binding HerbivoreStats.MaxAges, Mode=OneWay}" />
+                    <TextBox Text="{Binding CarnivoreStats.MaxAges, Mode=OneWay}" />
+                </catel:StackGrid>
+
+                <catel:StackGrid>
+                    <catel:StackGrid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                    </catel:StackGrid.ColumnDefinitions>
+                    <catel:StackGrid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </catel:StackGrid.RowDefinitions>
+                    <Label Style="{StaticResource Header}">Legend</Label>
+
+                    <catel:StackGrid Margin="6,0">
+                        <catel:StackGrid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </catel:StackGrid.ColumnDefinitions>
+                        <catel:StackGrid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </catel:StackGrid.RowDefinitions>
+                        <Border Width="20"
+                                Height="20"
+                                Background="LightGray" />
+                        <Label>- None</Label>
+
+                        <Border Width="20"
+                                Height="20"
+                                Background="Green" />
+                        <Label>- Plant</Label>
+
+                        <Border Width="20"
+                                Height="20"
+                                Background="Yellow" />
+                        <Label>- Herbivore</Label>
+
+                        <Border Width="20"
+                                Height="20"
+                                Background="Red" />
+                        <Label>- Carnivore</Label>
+                    </catel:StackGrid>
+                </catel:StackGrid>
+            </catel:StackGrid>
+
+            <catel:StackGrid>
+                <catel:StackGrid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </catel:StackGrid.ColumnDefinitions>
+                <Button Command="{Binding ElementName=_self, Path=DataContext.ShowBestHerbivoreCommand, Mode=OneWay}">The best herbivore</Button>
+                <Button Command="{Binding ElementName=_self, Path=DataContext.ShowBestCarnivoreCommand, Mode=OneWay}">The best carnivore</Button>
+            </catel:StackGrid>
+
+            <catel:StackGrid>
+                <catel:StackGrid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </catel:StackGrid.RowDefinitions>
+                <Label Style="{StaticResource Header}">Alive agents</Label>
+                <ListBox ItemsSource="{Binding AliveAgents, Mode=OneWay}" ScrollViewer.VerticalScrollBarVisibility="Visible">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type viewModels:AgentViewModel}">
+                            <StackPanel Orientation="Horizontal" ToolTip="{Binding Hint, Mode=OneWay}">
+                                <TextBlock Text="{Binding Mode=OneWay}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </catel:StackGrid>
+        </catel:StackGrid>
+
+        <catel:StackGrid Name="GameField"
+                         Grid.Row="0"
+                         Grid.Column="1">
+            <catel:StackGrid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </catel:StackGrid.ColumnDefinitions>
+            <catel:StackGrid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </catel:StackGrid.RowDefinitions>
+
+            <catel:EmptyCell />
+
+            <ItemsControl ItemsSource="{Binding HorizontalCoordinates, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Height="Auto"
+                                     Columns="{Binding ElementName=_self.DataContext,
+                                                       Path=GridColumns,
+                                                       Mode=OneTime}"
+                                     Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label Width="20"
+                               Height="20"
+                               Margin="0"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               Content="{Binding}"
+                               Padding="0" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl ItemsSource="{Binding VerticalCoordinates, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Height="Auto"
+                                     Columns="1"
+                                     Rows="{Binding ElementName=_self.DataContext,
+                                                    Path=GridRows,
+                                                    Mode=OneTime}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label Width="20"
+                               Height="20"
+                               Margin="0"
+                               HorizontalContentAlignment="Center"
+                               VerticalContentAlignment="Center"
+                               Content="{Binding}"
+                               Padding="0" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <ItemsControl Name="GameFieldControl"
+                          Focusable="False"
+                          ItemsSource="{Binding SelectedAgeCells,
+                                                Mode=OneWay}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Height="Auto"
+                                     Columns="{Binding ElementName=_self.DataContext,
+                                                       Path=GridColumns,
+                                                       Mode=OneTime}"
+                                     Rows="{Binding ElementName=_self.DataContext,
+                                                    Path=GridRows,
+                                                    Mode=OneTime}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type viewModels:AgentViewModel}">
+                        <Border Width="20"
+                                Height="20"
+                                Margin="0"
+                                Background="{Binding BackgroundColor,
+                                                     Mode=OneWay}"
+                                BorderThickness="1"
+                                Padding="0">
+                            <Border.InputBindings>
+                                <MouseBinding Command="{Binding ShowBrainCommand, Mode=OneTime}" MouseAction="LeftDoubleClick" />
+                            </Border.InputBindings>
+                            <Label Margin="0,-7,0,0"
+                                   HorizontalContentAlignment="Center"
+                                   VerticalContentAlignment="Center"
+                                   Content="{Binding Direction,
+                                                     Mode=OneWay}"
+                                   FontSize="20"
+                                   Foreground="{Binding ForegroundColor,
+                                                        Mode=OneWay}"
+                                   Padding="0"
+                                   ToolTip="{Binding Hint,
+                                                     Mode=OneWay}" />
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </catel:StackGrid>
+
+    </Grid>
+</Window>

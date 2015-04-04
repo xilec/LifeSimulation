@@ -12,34 +12,9 @@ using LifeSimulation.Location;
 using LifeSimulation.Simulation;
 
 module Program
-{
-    //Main() : void
-    //{
-    //    //WriteLine("Hi!");
-
-    //    Landscape[0][0,0] = 17;
-
-    //    def agent = AgentType();
-    //    agent.Age = 35;
-    //    agent.Inputs[2] = 3;
-
-    //    WriteLine(Landscape[0][0,0]);
-
-    //    _ = ReadLine();
-    //}
-    
+{  
     Main() : void
     {
-        Init();
-        
-        mutable i = 0;
-        while(i < MaxSteps)
-        {
-            Simulate();   
-            
-            i++;
-        }
-        
         _ = ReadLine();
     }
 }

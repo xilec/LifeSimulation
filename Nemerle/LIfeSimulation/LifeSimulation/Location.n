@@ -9,17 +9,16 @@ using System.Linq;
 
 namespace LifeSimulation
 {
-    /// <summary>
-    /// Description of Location.
-    /// </summary>
     [Record]
     public class Location
     {
-        // x offset
         public X : int { get; set; }
-
-        
-        // y offset
         public Y : int { get; set; }
+        
+        public DeepClone() : Location
+        {
+            def result = MemberwiseClone() :> Location;
+            result
+        }
     }
 }

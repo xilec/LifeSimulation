@@ -1,0 +1,32 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using NUnit.Framework;
+
+namespace LifeSimulation.Tests
+{
+    using LifeSimulation;
+    
+    public class Tests
+    {
+        [Test]
+        public Extinction() : void
+        {
+            def simulation = Simulation();
+            
+            for(mutable i = 0; i < 400; i++)
+            {
+                simulation.Simulate();
+            }
+            
+            Assert.IsTrue(simulation.Landscape.Agents.Any(x => x != null), "After simulation should be alived agents");
+            Assert.IsTrue(simulation.Landscape.Plants.Any(x => x != null), "After simulation should be alived plants");
+        }
+    }
+}

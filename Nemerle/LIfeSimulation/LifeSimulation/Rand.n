@@ -9,24 +9,29 @@ using System.Linq;
 
 namespace LifeSimulation
 {
-    module Helpers
+    public module Rand
     {
-        rand = Random();
-
+        private mutable _rand = Random();
+        
+        public ReinitializeRandom(seed : int) : void
+        {
+            _rand = Random(seed)
+        }
+        
         public GetSRand() : double
         {
-            rand.NextDouble()
+            _rand.NextDouble()
         }
 
-        public GetRand(x: int) : int
+        public GetRand(max: int) : int
         {
-            (GetSRand() * x) :> int
+            _rand.Next(max)
         }
         
         // Возвращает значения, которые могут принимать веса нейронной сети
         public GetWeight() : int
         {
-            GetRand(9) - 1;
+            GetRand(10) - 6;
         }
     }
 }

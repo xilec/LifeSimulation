@@ -1,0 +1,331 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+using Nemerle.Imperative;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LifeSimulation
+{
+    using AgentType;
+    using Direction;
+    using SensorInputOffsets;
+
+    public class Landscape
+    {
+        public static MaxDirection = 4;
+
+        public static HERB_PLANE = 0;
+        public static CARN_PLANE = 1;
+        public static PLANT_PLANE = 2;
+
+        public static MaxGrid = 30;
+        public static MaxAgents = 36;
+        public static MaxPlants = 35;
+
+        private _landscape : array[array[2, Agent]] = array[array(MaxGrid, MaxGrid), array(MaxGrid, MaxGrid), array(MaxGrid, MaxGrid)];
+
+        public mutable Agents : array[Agent] = array(MaxAgents);
+        public mutable Plants : array[Agent] = array(MaxPlants);
+        
+        public Statistics : Statistics = Statistics();
+
+        private static Offsets : array[(int * int)] = array[(0, -1), (0, 1), (1, 0), (-1, 0)];
+
+        public static NorthFront = array[(-2, -2), (-1, -2), (0, -2), (1, -2), (2, -2)];
+        public static NorthLeft = array[(-2, 0), (-2, -1)];
+        public static NorthRight = array[(2, 0), (2, -1)];
+        public static NorthProx = array[(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0)];
+        
+        public static WestFront = array[(-2, 2), (-2, 1), (-2, 0), (-2, -1), (-2, -2)];
+        public static WestLeft = array[(0, 2), (-1, 2)];
+        public static WestRight = array[(0, -2), (-1, -2)];
+        public static WestProx = array[(0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1)];
+        
+        public static NorthOffsets : array[array[(int*int)]] = array[NorthFront, NorthLeft, NorthRight, NorthProx];
+        public static WestOffsets : array[array[(int*int)]] = array[WestFront, WestLeft, WestRight, WestProx];
+
+        private Init() : void
+        {
+            InitPlants();
+            InitAgents();
+        }
+
+        private this()
+        {
+        }
+        
+        public static Create() : Landscape
+        {
+            mutable landscape = Landscape();
+            landscape.Init();
+
+            landscape
+        }
+
+        public static CreateTest() : Landscape
+        {
+            Landscape()
+        }
+
+        public GetRowsCount() : int
+        {
+            MaxGrid;
+        }
+
+        public GetColumnsCount() : int
+        {
+            MaxGrid;
+        }
+
+        private InitAgents() : void
+        {
+            for(mutable agentIndex = 0; agentIndex < MaxAgents; agentIndex++)
+            {
+                def newAgentType = if (agentIndex < MaxAgents / 2) { Herbivore } else { Carnivore }
+                def newAgent = Training.TrainingCamp.EducateAgent(newAgentType);
+                Agents[agentIndex] = newAgent;
+                AddAgent(newAgent);
+            }
+        }
+        
+        private AddAgent(agent : Agent) : void
+        {
+            Statistics.AgentTypeCounts[agent.Type]++;
+            FindEmptySpotAndFill(agent);
+        }
+        
+        private FindEmptySpotAndFill(agent : Agent) : void
+        {
+            agent.Location.X = -1;
+            agent.Location.Y = -1;
+            
+            do
+            {
+                agent.Location.X = Rand.GetRand(MaxGrid);
+                agent.Location.Y = Rand.GetRand(MaxGrid);
+            } while (_landscape[agent.Type :> int][agent.Location.Y, agent.Location.X] != null);
+            
+            agent.Direction = Rand.GetRand(MaxDirection) :> Direction;
+            SetAgentInPosition(agent);
+        }
+        
+        public SetAgentInPosition(agent : Agent) : void
+        {
+            def type = agent.Type :> int;
+            _landscape[type][agent.Location.Y, agent.Location.X] = agent
+        }
+        
+        private InitPlants() : void
+        {
+            for(mutable plantIndex = 0; plantIndex < MaxPlants; plantIndex++)
+            {
+                def newPlant = Agent.CreatePlant();
+                Plants[plantIndex] = newPlant;
+                AddPlant(newPlant);
+            }
+        }
+        
+        public AddPlant(plant : Agent) : void
+        {
+            while(true)
+            {
+                def x = Rand.GetRand(MaxGrid);
+                def y = Rand.GetRand(MaxGrid);
+                
+                when(_landscape[PLANT_PLANE][y, x] == null)
+                {
+                    plant.Location.X = x;
+                    plant.Location.Y = y;
+                    _landscape[PLANT_PLANE][y, x] = plant;
+                    break;
+                }
+            }
+        }
+        
+        public RemovePlant(plant : Agent) : void
+        {
+            _landscape[PLANT_PLANE][plant.Location.Y, plant.Location.X] = null;
+        }
+        
+        public FindPlant(x : int, y : int) : Agent
+        {
+            _landscape[PLANT_PLANE][y, x]
+        }
+        
+        public FindHerbivore(x : int, y : int) : Agent
+        {
+            _landscape[HERB_PLANE][y, x]
+        }
+        
+        public RemoveAgent(agent : Agent) : void
+        {
+            def type = agent.Type :> int;
+            _landscape[type][agent.Location.Y, agent.Location.X] = null;
+        }
+        
+        public SetPlantToPosition(plant : Agent) : void
+        {
+            _landscape[PLANT_PLANE][plant.Location.Y, plant.Location.X] = plant;
+        }
+        
+        public Move(agent : Agent) : void
+        {
+            RemoveAgent(agent);
+            
+            def direction = agent.Direction :> int;
+            def (x, y) = Offsets[direction];
+            agent.Location.X = Clip(agent.Location.X + x);
+            agent.Location.Y = Clip(agent.Location.Y + y);
+            SetAgentInPosition(agent);
+        }
+        
+        private static Clip(position : int) : int
+        {
+            | _ when position < 0        => MaxGrid + position;
+            | _ when position >= MaxGrid => position % MaxGrid;
+            | _                          => position;
+        }
+        
+        private ChooseObject(plane : int, location : Location, offsets : array[(int*int)], neg : int) : (bool*int*int)
+        {
+            def ax = location.X;
+            def ay = location.Y;
+            
+            foreach(offset in offsets)
+            {
+                def (x, y) = offset;
+                def xOffset = Clip(ax + (x * neg));
+                def yOffset = Clip(ay + (y * neg));
+                
+                when(_landscape[plane][yOffset, xOffset] != null)
+                {
+                    return (true, xOffset, yOffset);
+                }
+            }
+            
+            (false, -1, -1)
+        }
+        
+        internal ChooseObject(agent : Agent) : (bool*int*int)
+        {
+            def plane = match (agent.Type)
+            {
+                | Carnivore => HERB_PLANE;
+                | Herbivore => PLANT_PLANE;
+                | _         => throw ArgumentOutOfRangeException();
+            }
+            
+            def location = agent.Location;
+            
+            match(agent.Direction)
+            {
+                | North => ChooseObject(plane, location, NorthProx, 1);
+                | South => ChooseObject(plane, location, NorthProx, -1);
+                | West  => ChooseObject(plane, location, WestProx, 1);
+                | East  => ChooseObject(plane, location, WestProx, -1);
+            }
+        }
+        
+        public KillAgent(agent : Agent) : void
+        {
+            Statistics.CheckMaxAge(agent);
+            
+            mutable agentIndex;
+            for(; agentIndex < Agents.Length; agentIndex++)
+            {
+                when(Agents[agentIndex] == agent)
+                {
+                    break;
+                }
+            }
+            
+            when(agentIndex == Agents.Length)
+            {
+                throw Exception("Agent no found in list");
+            }
+            
+            Agents[agentIndex] = null;
+            RemoveAgent(agent);
+            Statistics.AgentTypeCounts[agent.Type]--;
+            Statistics.AgentTypeDeathes[agent.Type]++;
+        }
+        
+        public ReproduceAgent(agent : Agent) : void
+        {
+            when(Statistics.AgentTypeCounts[agent.Type] >= MaxAgents / 2)
+            {
+                return;
+            }
+            
+            mutable emptyAgentIndex = 0;
+            for(; emptyAgentIndex < Agents.Length; emptyAgentIndex++)
+            {
+                when(Agents[emptyAgentIndex] == null)
+                {
+                    break;
+                }
+            }
+            
+            when(emptyAgentIndex == Agents.Length)
+            {
+                return;
+            }
+            
+            def child = agent.BornChild();
+            Agents[emptyAgentIndex] = child;
+            FindEmptySpotAndFill(child);
+            
+            Statistics.CheckMaxAge(child);
+            Statistics.AgentTypeCounts[child.Type]++;
+            Statistics.AgentTypeReproductions[child.Type]++;
+        }
+        
+        private Percept(agent : Agent, sensorInputOffset : SensorInputOffsets, offsets : array[(int* int)], neg : int) : void
+        {
+            def agentLocation = agent.Location;
+            def inputOffset = sensorInputOffset :> int;
+            
+            for(mutable planeIndex = 0; planeIndex < _landscape.Length; planeIndex++)
+            {
+                def plane = _landscape[planeIndex];
+                agent.Inputs[inputOffset + planeIndex] = 0;
+                
+                foreach((x, y) in offsets)
+                {
+                    def xoff = Clip(agentLocation.X + (x*neg));
+                    def yoff = Clip(agentLocation.Y + (y*neg));
+                    
+                    def agentOnPlane = plane[yoff, xoff];
+                    when(agentOnPlane != null && agentOnPlane != agent)
+                    {
+                        agent.Inputs[inputOffset + planeIndex]++;
+                    }
+                }
+            }
+        }
+        
+        private PerceptAll(agent : Agent, offsets : array[array[(int*int)]], neg : int) : void
+        {
+            Percept(agent, HERB_FRONT, offsets[0], neg);
+            Percept(agent, HERB_LEFT, offsets[1], neg);
+            Percept(agent, HERB_RIGTH, offsets[2], neg);
+            Percept(agent, HERB_PROXIMITY, offsets[3], neg);
+        }
+        
+        public UpdatePerception(agent : Agent) : void
+        {
+            match(agent.Direction)
+            {
+                | North => PerceptAll(agent, NorthOffsets, 1);
+                | South => PerceptAll(agent, NorthOffsets, -1);
+                | West  => PerceptAll(agent, WestOffsets, 1);
+                | East  => PerceptAll(agent, WestOffsets, -1);
+            }
+        }
+        
+    }
+}

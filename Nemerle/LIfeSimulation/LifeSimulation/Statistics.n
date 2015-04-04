@@ -1,0 +1,85 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+using Nemerle.Imperative;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Newtonsoft.Json;
+
+namespace LifeSimulation
+{
+    using AgentType;
+
+    public class Statistics
+    {
+        public this()
+        {
+            AgentTypeCounts.Add(Herbivore, 0);
+            AgentTypeCounts.Add(Carnivore, 0);
+            
+            AgentTypeReproductions.Add(Herbivore, 0);
+            AgentTypeReproductions.Add(Carnivore, 0);
+
+            AgentTypeDeathes.Add(Herbivore, 0);
+            AgentTypeDeathes.Add(Carnivore, 0);
+        }
+
+        [JsonProperty]
+        private _agentsMaxGen : Dictionary[AgentType, Agent] = Dictionary();
+
+        [JsonProperty]
+        private _agentsMaxAge : Dictionary[AgentType, Agent] = Dictionary();
+
+        public AgentTypeCounts : Dictionary[AgentType, int] = Dictionary();
+        public AgentTypeReproductions : Dictionary[AgentType, int] = Dictionary();
+        public AgentTypeDeathes : Dictionary[AgentType, int] = Dictionary();
+        
+        public CheckMaxGen(agent : Agent) : void
+        {
+            mutable maxGenAgent;
+            when(!_agentsMaxGen.TryGetValue(agent.Type, out maxGenAgent))
+            {
+                _agentsMaxGen.Add(agent.Type, agent.DeepClone());
+                return;
+            }
+            
+            when(maxGenAgent.Generation < agent.Generation)
+            {
+                _agentsMaxGen[agent.Type] = agent.DeepClone();
+            }
+        }
+        
+        public GetMaxGenAgent(agentType : AgentType) : Agent
+        {
+            mutable agent;
+            _ = _agentsMaxGen.TryGetValue(agentType, out agent);
+            agent
+        }
+        
+        public CheckMaxAge(agent : Agent) : void
+        {
+            mutable maxAgeAgent;
+            when(!_agentsMaxAge.TryGetValue(agent.Type, out maxAgeAgent))
+            {
+                _agentsMaxAge.Add(agent.Type, agent.DeepClone());
+                return;
+            }
+            
+            when(agent.Age > maxAgeAgent.Age)
+            {
+                _agentsMaxAge[agent.Type] = agent.DeepClone();
+            }
+        }
+        
+        public GetMaxAgeAgent(agentType : AgentType) : Agent
+        {
+            mutable agent;
+            _ = _agentsMaxAge.TryGetValue(agentType, out agent);
+            agent
+        }
+    }
+}

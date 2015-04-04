@@ -8,6 +8,8 @@ namespace SyntaxTest
 {
     public class SytaxTestClass
     {
+        public const int Test1 = 5;
+
         public static void Test(int a)
         {
             var random = new Random();

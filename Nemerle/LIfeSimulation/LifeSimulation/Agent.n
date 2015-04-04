@@ -4,39 +4,64 @@ using Nemerle.Text;
 using Nemerle.Utility;
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+
+using Newtonsoft.Json;
+using Nemerle.Extensions;
 
 namespace LifeSimulation
 {
     using Location;
-    using Simulation;
-     
-    public enum AgentType
-    {
-        | Dead = -1
-        | Herbivore = 0
-        | Carnivore = 1
-    }
-    
-    public enum Direction
-    {
-        | North
-        | South
-        | West
-        | East
-    }
-    
-    /// <summary>
-    /// Description of AgentType.
-    /// </summary>
+    using Direction;
+    using AgentAction;
+    using AgentType;
+             
+    [DebuggerDisplay("{Name} X = {Location.X} Y = {Location.Y}")]
     public class Agent
-    {      
-        public this()
+    {   
+        private static MaxFoodEnergy: int = 110;
+        public static MaxEnergy: int = 200;
+        
+        public static MaxInputs : int = 12;
+        public static MaxOutputs : int = 4;
+        public static TotalWeights : int = MaxInputs*MaxOutputs;
+    
+        private static mutable _herbivoresCount : int = 0;
+        private static mutable _carnivoresCount : int = 0;
+        
+        [JsonConstructor]
+        private this()
         {
+            Location = Location(-1, -1)
+        }
+        
+        public this(type: AgentType)
+        {
+            Name = CreateName(type);
+            Type = type;
+            Energy = MaxEnergy / 2;
+            Age = 0;
+            Generation = 1;
+            Location = Location(-1, -1);
+            Direction = West;
+        }
+        
+        private static CreateName(type: AgentType) : string
+        {
+            | Herbivore => 
+                _herbivoresCount++;
+                "H" + _herbivoresCount.ToString()
+            | Carnivore => 
+                _carnivoresCount++;
+                "C" + _carnivoresCount.ToString()
+            | _ => throw ArgumentOutOfRangeException("type");
         }
 
-        public mutable Type : AgentType;
+        [JsonProperty]
+        public mutable Name : string;
+        [JsonProperty]
+        public Type : AgentType;
         public mutable Energy : int;
         public mutable Parent : int;
         public mutable Age : int;
@@ -45,37 +70,100 @@ namespace LifeSimulation
         public mutable Direction : Direction;
         public mutable Inputs : array[int] = array(MaxInputs);
         public mutable WeightOI : array[int] = array(MaxInputs * MaxOutputs);
-        public mutable Biaso : array[int] = array(MaxOutputs);
-        public mutable Actions : array[int] = array(MaxOutputs);
+        public mutable BiasO : array[int] = array(MaxOutputs);
+        public mutable Outputs : array[int] = array(MaxOutputs);
+        public mutable Action : AgentAction;
+        
+        public Eat() : void
+        {
+            Energy += if(Type == Herbivore) { MaxFoodEnergy } else { 2 * MaxFoodEnergy};
+            
+            when(Energy > MaxEnergy)
+            {
+                Energy = MaxEnergy
+            }
+        }
+        
+        public Turn(action : AgentAction) : void
+        {
+            Direction = 
+                match((Direction, action))
+                {
+                    | (North, TurnLeft)  => West;
+                    | (North, TurnRight) => East;
+                    | (South, TurnLeft)  => East;
+                    | (South, TurnRight) => West;
+                    | (West,  TurnLeft)  => North;
+                    | (West,  TurnRight) => South;
+                    | (East,  TurnLeft)  => South;
+                    | (East,  TurnRight) => North;
+                    | _ => throw ArgumentOutOfRangeException()
+                }
+        }
+        
+        public BornChild() : Agent
+        {
+            def child = DeepClone();
+            child.Name = CreateName(Type);
+                        
+            child.Generation++;
+            child.Age = 0;
+            
+            when (Rand.GetSRand() <= 0.2)
+            {
+                child.WeightOI[Rand.GetRand(Agent.TotalWeights)] = Rand.GetWeight();
+            }
+
+            // Репродукция уменьшает энергию родителя вдвое
+            Energy /= 2;
+            
+            child;
+        }
+        
+        public DeepClone() : Agent
+        {
+            mutable result = MemberwiseClone() :> Agent <-
+            {
+                Location = Location.DeepClone();
+                Inputs = Inputs.Clone() :> array[int];
+                WeightOI = WeightOI.Clone() :> array[int];
+                BiasO = BiasO.Clone() :> array[int];
+                Outputs = Outputs.Clone() :> array[int];
+            };            
+            
+            result
+        }
+        
+        public static CreatePlant() : Agent
+        {
+            Agent()
+        }
+        
+        public MakeDecision() : void
+        {
+            for(mutable outIndex = 0; outIndex < MaxOutputs; outIndex++)
+            {
+                Outputs[outIndex] = BiasO[outIndex];
+                
+                for(mutable inIndex = 0; inIndex < MaxInputs; inIndex++)
+                {
+                    Outputs[outIndex] += Inputs[inIndex]*WeightOI[outIndex*MaxInputs + inIndex];
+                }
+            }
+            
+            mutable largest = Int32.MinValue;
+            mutable winnerOutput = Int32.MinValue;
+            
+            for(mutable outIndex = 0; outIndex < MaxOutputs; outIndex++)
+            {
+                when(Outputs[outIndex] >= largest)
+                {
+                    largest = Outputs[outIndex];
+                    winnerOutput = outIndex;
+                }
+            }
+            
+            Action = winnerOutput :> AgentAction;
+        }
     }    
-
-    //public TypeHerbivore = 0;
-    //public TypeCarnivore = 1;
-
-    public enum SensorInputs
-    {
-        | HERB_FRONT      //= 0
-        | CARN_FRONT      //= 1
-        | PLANT_FRONT     //= 2
-
-        | HERB_LEFT       //= 3;
-        | CARN_LEFT       //= 4;
-        | PLANT_LEFT      //= 5;
-
-        | HERB_RIGTH      //= 6;
-        | CARN_RIGTH      //= 7;
-        | PLANT_RIGTH     //= 8;
-
-        | HERB_PROXIMITY  //= 9;
-        | CARN_PROXIMITY  //= 10;
-        | PLANT_PROXIMITY //= 11;
-    }
-
-    public enum AgentActions
-    {
-        | ACTION_TURN_LEFT  // = 0
-        | ACTION_TURN_RIGHT // = 1
-        | ACTION_MOVE       // = 2
-        | ACTION_EAT        // = 3
-    }
 }

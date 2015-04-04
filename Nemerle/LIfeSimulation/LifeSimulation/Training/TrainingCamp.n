@@ -1,0 +1,160 @@
+﻿using Nemerle;
+using Nemerle.Collections;
+using Nemerle.Text;
+using Nemerle.Utility;
+using Nemerle.Imperative;
+using Nemerle.Extensions;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LifeSimulation.Training
+{
+    using Agent;
+    using AgentAction;
+    using AgentType;
+
+    public module TrainingCamp
+    {
+        this()
+        {
+            StandardTests = Dictionary();
+            StandardTests.Add(Herbivore, StandardHerbivoreTests);            
+            StandardTests.Add(Carnivore, StandardCarnivoreTests);            
+        }
+
+        public EducateAgent(agentType: AgentType): Agent
+        {
+            mutable agent = Agent(agentType);
+            def tmpInputs = agent.Inputs;
+
+            mutable choosenBrain : ArtificialBrain;
+            while(true)
+            {
+                def brain = CreateBrain();
+                SetBrain(agent, brain);
+                def scores = FitnessFunction(agent, StandardTests[agentType]);
+
+                when(scores >= 1700)
+                {
+                    choosenBrain = brain;
+                    break;
+                }
+            }
+
+            SetBrain(agent, choosenBrain);
+            agent.Inputs = tmpInputs;
+
+            agent
+        }
+
+        private SetBrain(agent : Agent, brain : ArtificialBrain) : void
+        {
+            agent.WeightOI = brain.WeightOI;
+            agent.BiasO = brain.BiasO;
+        }
+
+        private FitnessFunction(agent : Agent, tests: array[Test]) : double
+        {
+            mutable scores = 0d;
+            foreach(test in tests)
+            {
+                agent.Inputs = test.Inputs;
+                agent.MakeDecision();
+
+                scores += if(agent.Action == test.ExpectedAction) { test.Scores } else { 0 }
+            }
+            
+            scores
+        }
+
+        private class ArtificialBrain
+        {
+            public WeightOI : array[int] = array(TotalWeights);
+            public BiasO : array[int] = array(MaxOutputs);
+        }
+
+        private CreateBrain() : ArtificialBrain
+        {
+            mutable result = ArtificialBrain();
+
+            for(mutable i = 0; i < result.WeightOI.Length; i++)
+            {
+                result.WeightOI[i] = Rand.GetWeight();
+            }
+
+            for(mutable i = 0; i < result.BiasO.Length; i++)
+            {
+                result.BiasO[i] = Rand.GetWeight();
+            }
+
+            result
+        }
+
+        [Record]
+        private class Test
+        {
+            public Inputs : array[int] { get; set; }
+            public ExpectedAction : AgentAction { get; set; }
+            public Scores : double { get; set; }
+        }
+
+        private StandardHerbivoreTests : array[Test] = 
+        array[
+            Test(CreateInputs(), Move, 200),
+            Test(CreateInputs(plantsOnLeft = 1), TurnLeft, 100),
+            Test(CreateInputs(plantsOnRight = 1), TurnRight, 100),
+            Test(CreateInputs(plantsOnFront = 1), Move, 500),
+            Test(CreateInputs(plantsOnFront = 1), Eat, -300),
+            Test(CreateInputs(plantsOnFront = 1), TurnLeft, -300),
+            Test(CreateInputs(plantsOnFront = 1), TurnRight, -300),
+            Test(CreateInputs(plantsOnProximity = 1), Eat, 1000)
+        ];
+
+        private StandardCarnivoreTests : array[Test] = 
+        array[
+            Test(CreateInputs(), AgentAction.Move, 200),
+            Test(CreateInputs(herbivoresOnLeft = 1), TurnLeft, 100),
+            Test(CreateInputs(herbivoresOnRight = 1), TurnRight, 100),
+            Test(CreateInputs(herbivoresOnFront = 1), Move, 500),
+            Test(CreateInputs(herbivoresOnFront = 1), Eat, -300),
+            Test(CreateInputs(herbivoresOnFront = 1), TurnLeft, -300),
+            Test(CreateInputs(herbivoresOnFront = 1), TurnRight, -300),
+            Test(CreateInputs(herbivoresOnProximity = 1), Eat, 1000),
+        ];
+
+        private StandardTests : Dictionary[AgentType, array[Test]];
+
+        public CreateInputs(
+            herbivoresOnFront = 0,
+            carnivoresOnFront = 0,
+            plantsOnFront = 0,
+            herbivoresOnLeft = 0,
+            carnivoresOnLeft = 0,
+            plantsOnLeft = 0,
+            herbivoresOnRight = 0,
+            carnivoresOnRight = 0,
+            plantsOnRight = 0,
+            herbivoresOnProximity = 0,
+            carnivoresOnProximity = 0,
+            plantsOnProximity = 0) : array[int]
+        {
+            mutable inputs = array(MaxInputs);
+            inputs[0] = herbivoresOnFront;
+            inputs[1] = carnivoresOnFront;
+            inputs[2] = plantsOnFront;
+            inputs[3] = herbivoresOnLeft;
+            inputs[4] = carnivoresOnLeft;
+            inputs[5] = plantsOnLeft;
+            inputs[6] = herbivoresOnRight;
+            inputs[7] = carnivoresOnRight;
+            inputs[8] = plantsOnRight;
+            inputs[9] = herbivoresOnProximity;
+            inputs[10] = carnivoresOnProximity;
+            inputs[11] = plantsOnProximity;
+
+            inputs
+        }
+    }
+}

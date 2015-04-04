@@ -76,11 +76,6 @@
       <Project>{6cb80609-4f33-4b34-8a34-4b00de825562}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Visualizer\Visualizer.csproj">
-      <Name>Visualizer</Name>
-      <Project>{cb51bfe2-9821-41f5-b713-a1667cc00364}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--

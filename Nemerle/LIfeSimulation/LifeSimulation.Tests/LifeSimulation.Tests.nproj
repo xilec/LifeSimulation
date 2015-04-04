@@ -5,20 +5,18 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>7c3cacf4-ac9c-4a63-8918-2e4c417a7535</ProjectGuid>
+    <ProjectGuid>4e1866ea-0037-4b54-8865-a852f38c0bbd</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LifeSimulation</RootNamespace>
-    <AssemblyName>LifeSimulation</AssemblyName>
+    <RootNamespace>LifeSimulation.Tests</RootNamespace>
+    <AssemblyName>LifeSimulation.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NoStdLib>true</NoStdLib>
     <NemerleVersion>Net-4.0</NemerleVersion>
     <NemerleBinPathRoot Condition=" '$(NemerleBinPathRoot)' == '' ">$(ProgramFiles)\Nemerle</NemerleBinPathRoot>
     <Nemerle Condition=" '$(Nemerle)' == '' ">$(NemerleBinPathRoot)\$(NemerleVersion)</Nemerle>
-    <Name>LIfeSimulation</Name>
-    <StartupObject />
-    <ApplicationIcon />
+    <Name>LifeSimulation.Tests</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,11 +36,26 @@
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssert, Version=1.0.0.11, Culture=neutral, PublicKeyToken=null">
+      <Name>FluentAssert</Name>
+      <AssemblyName>FluentAssert.dll</AssemblyName>
+      <HintPath>..\packages\FluentAssert.1.0.0.11\lib\FluentAssert.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.2.1502.911, Culture=neutral, PublicKeyToken=69f491c39445e920">
+      <Name>Moq</Name>
+      <AssemblyName>Moq.dll</AssemblyName>
+      <HintPath>..\packages\Moq.4.2.1502.0911\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
       <Name>Newtonsoft.Json</Name>
       <AssemblyName>Newtonsoft.Json.dll</AssemblyName>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Name>nunit.framework</Name>
+      <AssemblyName>nunit.framework.dll</AssemblyName>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -66,49 +79,37 @@
     </MacroReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Agent.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="AgentAction.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="AgentType.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Direction.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Landscape.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Rand.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Location.n">
+    <Compile Include="Perception.n">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.n" />
-    <Compile Include="SensorInputOffsets.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Simulation.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Statistics.n">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Training\TrainingCamp.n">
+    <Compile Include="Tests.n">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Training" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="FluentAssert.License.txt">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="FluentAssert.Provenance.txt">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="FluentAssert.xml">
+      <SubType>Content</SubType>
+    </Content>
     <Content Include="packages.config">
       <SubType>Content</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LifeSimulation\LifeSimulation.nproj">
+      <Name>LifeSimulation</Name>
+      <Project>{7c3cacf4-ac9c-4a63-8918-2e4c417a7535}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(Nemerle)\Nemerle.MSBuild.targets" />
   <!--

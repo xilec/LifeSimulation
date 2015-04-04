@@ -1,0 +1,161 @@
+﻿<Window x:Class="Visualizer.Views.BrainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:catel="http://catel.codeplex.com"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Visualizer.ViewModels"
+        Title="Brain Visualization"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        SnapsToDevicePixels="True"
+        WindowStartupLocation="CenterScreen"
+        d:DesignSource="{d:DesignInstance Type=viewModels:DesignAgentBrainViewModel,
+                                          IsDesignTimeCreatable=True}"
+        d:Height="300"
+        d:Width="600"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <RoutedCommand x:Key="CloseCommand" />
+        </ResourceDictionary>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource CloseCommand}" Executed="CommandBinding_OnExecuted" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="Escape" Command="{StaticResource CloseCommand}" />
+    </Window.InputBindings>
+    <catel:StackGrid>
+        <catel:StackGrid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </catel:StackGrid.ColumnDefinitions>
+        <catel:StackGrid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </catel:StackGrid.RowDefinitions>
+
+        <catel:StackGrid Grid.ColumnSpan="3">
+            <catel:StackGrid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+            </catel:StackGrid.ColumnDefinitions>
+            <Label Content="{Binding Description}" />
+        </catel:StackGrid>
+        <catel:EmptyRow />
+
+        <catel:EmptyCell />
+        <Label>Input</Label>
+        <catel:StackGrid>
+            <catel:StackGrid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </catel:StackGrid.ColumnDefinitions>
+            <Label>Turn left</Label>
+            <Label>Turn right</Label>
+            <Label>Move</Label>
+            <Label>Eat</Label>
+        </catel:StackGrid>
+
+        <Label>Bias</Label>
+        <catel:EmptyCell />
+        <Border BorderBrush="Black" BorderThickness="1">
+            <ItemsControl ItemsSource="{Binding Bias, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding OutputsCount, Mode=OneTime}" Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Content="{Binding }" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <StackPanel Orientation="Vertical">
+            <Label>Herbivore on front</Label>
+            <Label>Carnivore on front</Label>
+            <Label>Plant on front</Label>
+            <Label>Herbivore on left</Label>
+            <Label>Carnivore on left</Label>
+            <Label>Plant on left</Label>
+            <Label>Herbivore on right</Label>
+            <Label>Carnivore on right</Label>
+            <Label>Plant on right</Label>
+            <Label>Herbivore on proximity</Label>
+            <Label>Carnivore on proximity</Label>
+            <Label>Plant on proximity</Label>
+        </StackPanel>
+        <Border BorderBrush="Black" BorderThickness="1">
+            <ItemsControl ItemsSource="{Binding Inputs, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Content="{Binding }" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Border BorderBrush="Black" BorderThickness="1">
+            <ItemsControl ItemsSource="{Binding Brain, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding OutputsCount, Mode=OneTime}" Rows="{Binding InputsCount, Mode=OneTime}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Content="{Binding }" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <Label>Outputs</Label>
+        <catel:EmptyCell />
+        <Border BorderBrush="Black" BorderThickness="1">
+            <ItemsControl ItemsSource="{Binding Outputs, Mode=OneTime}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{Binding OutputsCount, Mode=OneTime}" Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Label HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Content="{Binding }" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+
+        <Label>Choosen action</Label>
+        <catel:EmptyCell />
+        <Label HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               Content="{Binding Action,
+                                 Mode=OneTime}" />
+    </catel:StackGrid>
+</Window>
