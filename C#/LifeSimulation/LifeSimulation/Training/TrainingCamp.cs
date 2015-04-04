@@ -10,9 +10,9 @@ namespace LifeSimulation.Training
             var tmpInputs = agent.Inputs;
 
             ArtificialBrain choosenBrain;
-            while(true)
+            while (true)
             {
-                 var brain = CreateBrain();
+                var brain = CreateBrain();
                 SetBrain(agent, brain);
                 var scores = FitnessFunction(agent, StandardTests[agentType]);
 
@@ -21,7 +21,7 @@ namespace LifeSimulation.Training
                     choosenBrain = brain;
                     break;
                 }
-            }           
+            }
 
             SetBrain(agent, choosenBrain);
             agent.Inputs = tmpInputs;
@@ -68,14 +68,8 @@ namespace LifeSimulation.Training
 
         private class ArtificialBrain
         {
-            public ArtificialBrain()
-            {
-                WeightOI = new int[Agent.TotalWeights];
-                BiasO = new int[Agent.MaxOutputs];
-            }
-
-            public int[] WeightOI { get; set; }
-            public int[] BiasO { get; set; }
+            public readonly int[] WeightOI = new int[Agent.TotalWeights];
+            public readonly int[] BiasO = new int[Agent.MaxOutputs];
         }
 
         private readonly static Test[] StandardHerbivoreTests = 

@@ -46,7 +46,8 @@ namespace LifeSimulation
 
         public Agent GetMaxGenAgent(AgentType agentType)
         {
-            Agent agent = _agentsMaxGen.TryGetValue(agentType, out agent) ? agent : null;
+            Agent agent;
+            _agentsMaxGen.TryGetValue(agentType, out agent);
             return agent;
         }
 

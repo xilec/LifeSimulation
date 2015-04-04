@@ -10,13 +10,13 @@ namespace LifeSimulation.Tests
         {
             var simulation = new Simulation();
 
-            for (int i = 0; i <200; i++)
+            for (int i = 0; i <400; i++)
             {
                 simulation.Simulate();
             }
 
             Assert.IsTrue(simulation.Landscape.Agents.Any(x => x != null), "After simulation should be alived agents");
-            Assert.IsTrue(simulation.Landscape.Plants.Any(x => x != null), "After simulation should be alived plantsUR");
+            Assert.IsTrue(simulation.Landscape.Plants.Any(x => x != null), "After simulation should be alived plants");
         }
     }
 }

@@ -34,7 +34,7 @@ namespace LifeSimulation
             Direction = Direction.West;
         }
 
-        private string CreateName(AgentType type)
+        private static string CreateName(AgentType type)
         {
             switch (type)
             {
@@ -51,7 +51,9 @@ namespace LifeSimulation
 
         [JsonProperty]
         public string Name { get; private set; }
-        public AgentType Type;
+
+        [JsonProperty]
+        public readonly AgentType Type;
         public int Energy;
         public int Parent;
         public int Age;
@@ -96,10 +98,20 @@ namespace LifeSimulation
             }
         }
 
-        public Agent GetChild()
+        public Agent BornChild()
         {
             var child = DeepClone();
             child.Name = CreateName(Type);
+            child.Generation++;
+            child.Age = 0;
+
+            if (Rand.GetSRand() <= 0.2)
+            {
+                child.WeightOI[Rand.GetRand(Agent.TotalWeights)] = Rand.GetWeight();
+            }
+
+            // Репродукция уменьшает энергию родителя вдвое
+            Energy /= 2;
 
             return child;
         }
@@ -147,8 +159,7 @@ namespace LifeSimulation
                     winnerOutput = outIndex;
                 }
             }
-            var action = (AgentAction)winnerOutput;
-            Action = action;
+            Action = (AgentAction)winnerOutput;
         }
     }
 }

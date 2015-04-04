@@ -30,6 +30,21 @@ namespace LifeSimulation
         /// </remarks>
         private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
 
+        // Смещения координат для суммирования объектов в поле зрения агента
+        private static int[][] NorthFront = { new[] { -2, -2 }, new[] { -2, -1 }, new[] { -2, 0 }, new[] { -2, 1 }, new[] { -2, 2 } };
+        private static int[][] NorthLeft = { new[] { 0, -2 }, new[] { -1, -2 } };
+        private static int[][] NorthRight = { new[] { 0, 2 }, new[] { -1, 2 } };
+        private static int[][] NorthProx = { new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 }, new[] { -1, 1 }, new[] { 0, 1 } };
+
+        private static int[][] WestFront = { new[] { 2, -2 }, new[] { 1, -2 }, new[] { 0, -2 }, new[] { -1, -2 }, new[] { -2, -2 } };
+        private static int[][] WestLeft = { new[] { 2, 0 }, new[] { 2, -1 } };
+        private static int[][] WestRight = { new[] { -2, 0 }, new[] { -2, -1 } };
+        private static int[][] WestProx = { new[] { 1, 0 }, new[] { 1, -1 }, new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 } };
+
+        private static int[][][] NorthOffsets = { NorthFront, NorthLeft, NorthRight, NorthProx };
+        private static int[][][] WestOffsets = { WestFront, WestLeft, WestRight, WestProx };
+
+
         private Landscape()
         {
         }
@@ -67,7 +82,7 @@ namespace LifeSimulation
         {
             for (int agentIndex = 0; agentIndex < MaxAgents; agentIndex++)
             {
-                var newAgentType = agentIndex < (MaxAgents / 2) ? AgentType.Herbivore : AgentType.Carnivore;
+                var newAgentType = agentIndex < MaxAgents / 2 ? AgentType.Herbivore : AgentType.Carnivore;
                 var newAgent = TrainingCamp.EducateAgent(newAgentType);
                 Agents[agentIndex] = newAgent;
                 AddAgent(newAgent);
@@ -77,7 +92,7 @@ namespace LifeSimulation
         private void AddAgent(Agent agent)
         {
             Statistics.AgentTypeCounts[agent.Type]++;
-            FindEmptySpot(agent);
+            FindEmptySpotAndFill(agent);
         }
 
         private void InitPlants()
@@ -119,7 +134,7 @@ namespace LifeSimulation
             }
         }
 
-        private void FindEmptySpot(Agent agent)
+        private void FindEmptySpotAndFill(Agent agent)
         {
             agent.Location.X = -1;
             agent.Location.Y = -1;
@@ -208,8 +223,11 @@ namespace LifeSimulation
             return newPosition;
         }
 
-        public bool ChooseObject(int plane, int ax, int ay, int[][] offsets, int neg, out int ox, out int oy)
+        private bool ChooseObject(int plane, Location location, int[][] offsets, int neg, out int ox, out int oy)
         {
+            var ax = location.X;
+            var ay = location.Y;
+
             foreach (var offset in offsets)
             {
                 var xOffset = Clip(ax + (offset[1] * neg));
@@ -230,13 +248,54 @@ namespace LifeSimulation
             return false;
         }
 
+        internal bool ChooseObject(Agent agent, out int ox, out int oy)
+        {
+            // Сначала определяем слой, объект в котором будет съеден
+            int plane = 0;
+            if (agent.Type == AgentType.Carnivore)
+            {
+                plane = Landscape.HERB_PLANE;
+            }
+            else
+            {
+                if (agent.Type == AgentType.Herbivore)
+                {
+                    plane = Landscape.PLANT_PLANE;
+                }
+            }
+
+            var location = agent.Location;
+
+            // Выбираем съедаемый объект в зависимости от направления агента
+            bool isObjectChoosen;
+            switch (agent.Direction)
+            {
+                case Direction.North:
+                    isObjectChoosen = ChooseObject(plane, location, NorthProx, 1, out ox, out oy);
+                    break;
+                case Direction.South:
+                    isObjectChoosen = ChooseObject(plane, location, NorthProx, -1, out ox, out oy);
+                    break;
+                case Direction.West:
+                    isObjectChoosen = ChooseObject(plane, location, WestProx, 1, out ox, out oy);
+                    break;
+                case Direction.East:
+                    isObjectChoosen = ChooseObject(plane, location, WestProx, -1, out ox, out oy);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return isObjectChoosen;
+        }
+
+
         public void KillAgent(Agent agent)
         {
             // Пришла смерть (или агента съели)
             Statistics.CheckMaxAge(agent);
 
-            int agentIndex;
-            for (agentIndex = 0; agentIndex < Agents.Length; agentIndex++)
+            int agentIndex = 0;
+            for (; agentIndex < Agents.Length; agentIndex++)
             {
                 if (Agents[agentIndex] == agent)
                 {
@@ -278,28 +337,16 @@ namespace LifeSimulation
                 return;
             }
 
-            var child = agent.GetChild();
+            var child = agent.BornChild();
             Agents[emptyAgentIndex] = child;
-            FindEmptySpot(child);
-
-            if (Rand.GetSRand() <= 0.2)
-            {
-                child.WeightOI[Rand.GetRand(Agent.TotalWeights)] = Rand.GetWeight();
-            }
-
-            child.Generation++;
-            child.Age = 0;
+            FindEmptySpotAndFill(child);
 
             Statistics.CheckMaxGen(child);
-
-            // Репродукция уменьшает энергию родителя вдвое
-            child.Energy = agent.Energy = Agent.MaxEnergy / 2;
-
             Statistics.AgentTypeCounts[child.Type]++;
             Statistics.AgentTypeReproductions[child.Type]++;
         }
 
-        public void Percept(Agent agent, SensorInputOffsets sensorInputOffset, int[][] offsets, int neg)
+        private void Percept(Agent agent, SensorInputOffsets sensorInputOffset, int[][] offsets, int neg)
         {
             var agentLocation = agent.Location;
             var inputOffset = (int)sensorInputOffset;
@@ -329,32 +376,28 @@ namespace LifeSimulation
             switch (agent.Direction)
             {
                 case Direction.North:
-                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthLeft, 1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthRight, 1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthProx, 1);
+                    PerceptAll(agent, NorthOffsets, 1);
                     break;
                 case Direction.South:
-                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.NorthFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.NorthLeft, -1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.NorthRight, -1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.NorthProx, -1);
+                    PerceptAll(agent, NorthOffsets, -1);
                     break;
                 case Direction.West:
-                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, 1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestLeft, 1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestRight, 1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestProx, 1);
+                    PerceptAll(agent, WestOffsets, 1);
                     break;
                 case Direction.East:
-                    Percept(agent, SensorInputOffsets.HERB_FRONT, Simulation.WestFront, -1);
-                    Percept(agent, SensorInputOffsets.HERB_LEFT, Simulation.WestLeft, -1);
-                    Percept(agent, SensorInputOffsets.HERB_RIGTH, Simulation.WestRight, -1);
-                    Percept(agent, SensorInputOffsets.HERB_PROXIMITY, Simulation.WestProx, -1);
+                    PerceptAll(agent, WestOffsets, -1);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void PerceptAll(Agent agent, int[][][] offsets, int neg)
+        {
+            Percept(agent, SensorInputOffsets.HERB_FRONT, offsets[0], neg);
+            Percept(agent, SensorInputOffsets.HERB_LEFT, offsets[1], neg);
+            Percept(agent, SensorInputOffsets.HERB_RIGTH, offsets[2], neg);
+            Percept(agent, SensorInputOffsets.HERB_PROXIMITY, offsets[3], neg);
         }
     }
 }
