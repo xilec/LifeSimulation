@@ -2,20 +2,20 @@ namespace LifeSimulation
 {
     public enum SensorInputOffsets
     {
-        HERB_FRONT,      //= 0
-        CARN_FRONT,      //= 1
-        PLANT_FRONT,     //= 2
+        HerbivoreFront,      //= 0
+        CarnivoreFront,      //= 1
+        PlantFront,          //= 2
 
-        HERB_LEFT,       //= 3;
-        CARN_LEFT,       //= 4;
-        PLANT_LEFT,      //= 5;
+        HerbivoreLeft,       //= 3;
+        CarnivoreLeft,       //= 4;
+        PlantLeft,           //= 5;
 
-        HERB_RIGTH,      //= 6;
-        CARN_RIGTH,      //= 7;
-        PLANT_RIGTH,     //= 8;
+        HerbivoreRight,      //= 6;
+        CarnivoreRigth,      //= 7;
+        PlantRigth,          //= 8;
 
-        HERB_PROXIMITY,  //= 9;
-        CARN_PROXIMITY,  //= 10;
-        PLANT_PROXIMITY  //= 11;
+        HerbivoreProximity,  //= 9;
+        CarnivoreProximity,  //= 10;
+        PlantProximity       //= 11;
     }
 }

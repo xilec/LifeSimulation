@@ -119,7 +119,6 @@ namespace LifeSimulation
         public Agent DeepClone()
         {
             var result = (Agent)MemberwiseClone();
-            result.Location = Location.DeepClone();
             result.Inputs = (int[])Inputs.Clone();
             result.WeightOI = (int[])WeightOI.Clone();
             result.BiasO = (int[])BiasO.Clone();

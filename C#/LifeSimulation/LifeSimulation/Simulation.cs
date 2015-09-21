@@ -114,7 +114,7 @@ namespace LifeSimulation
             else
             {
                 agent.Age++;
-                Landscape.Statistics.CheckMaxGen(agent);
+                Landscape.Statistics.UpdateMaxGen(agent);
             }
         }
 
@@ -140,8 +140,8 @@ namespace LifeSimulation
                     {
                         agent.Eat();
 
-                        Landscape.RemovePlant(findedPlant);
-                        Landscape.AddPlant(findedPlant);
+                        Landscape.RemovePlantFromPlane(findedPlant);
+                        Landscape.AddPlantOnPlane(findedPlant);
                     }
 
                     break;

@@ -1,8 +1,8 @@
 ﻿namespace LifeSimulation
 {
-    public class Location
+    public struct Location
     {
-        public Location(int x, int y)
+        public Location(int x, int y) : this()
         {
             X = x;
             Y = y;
@@ -10,11 +10,5 @@
 
         public int X { get; set; }
         public int Y { get; set; }
-
-        public Location DeepClone()
-        {
-            var result = (Location)MemberwiseClone();
-            return result;
-        }
     }
 }

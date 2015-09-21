@@ -7,20 +7,20 @@ namespace LifeSimulation
     {
         public const int MaxDirection = 4;
 
-        public const int HERB_PLANE = 0;
-        public const int CARN_PLANE = 1;
-        public const int PLANT_PLANE = 2;
+        public const int HerbivorePlane = 0;
+        public const int CarnivorePlane = 1;
+        public const int PlantPlane = 2;
 
         public const int MaxGrid = 30;
         public const int MaxAgents = 36;
         public const int MaxPlants = 35;
 
-        private readonly Agent[][,] _landscape = { new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid] };
+        private Agent[][,] _landscape = { new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid] };
 
         public Agent[] Agents = new Agent[MaxAgents];
         public Agent[] Plants = new Agent[MaxPlants];
 
-        public readonly Statistics Statistics = new Statistics();
+        public Statistics Statistics = new Statistics();
 
         /// <summary>
         /// Направления движения в координатной сетке
@@ -31,18 +31,18 @@ namespace LifeSimulation
         private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
 
         // Смещения координат для суммирования объектов в поле зрения агента
-        private static int[][] NorthFront = { new[] { -2, -2 }, new[] { -2, -1 }, new[] { -2, 0 }, new[] { -2, 1 }, new[] { -2, 2 } };
-        private static int[][] NorthLeft = { new[] { 0, -2 }, new[] { -1, -2 } };
-        private static int[][] NorthRight = { new[] { 0, 2 }, new[] { -1, 2 } };
-        private static int[][] NorthProx = { new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 }, new[] { -1, 1 }, new[] { 0, 1 } };
+        private static readonly int[][] NorthFront = { new[] { -2, -2 }, new[] { -2, -1 }, new[] { -2, 0 }, new[] { -2, 1 }, new[] { -2, 2 } };
+        private static readonly int[][] NorthLeft = { new[] { 0, -2 }, new[] { -1, -2 } };
+        private static readonly int[][] NorthRight = { new[] { 0, 2 }, new[] { -1, 2 } };
+        private static readonly int[][] NorthProx = { new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 }, new[] { -1, 1 }, new[] { 0, 1 } };
 
-        private static int[][] WestFront = { new[] { 2, -2 }, new[] { 1, -2 }, new[] { 0, -2 }, new[] { -1, -2 }, new[] { -2, -2 } };
-        private static int[][] WestLeft = { new[] { 2, 0 }, new[] { 2, -1 } };
-        private static int[][] WestRight = { new[] { -2, 0 }, new[] { -2, -1 } };
-        private static int[][] WestProx = { new[] { 1, 0 }, new[] { 1, -1 }, new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 } };
+        private static readonly int[][] WestFront = { new[] { 2, -2 }, new[] { 1, -2 }, new[] { 0, -2 }, new[] { -1, -2 }, new[] { -2, -2 } };
+        private static readonly int[][] WestLeft = { new[] { 2, 0 }, new[] { 2, -1 } };
+        private static readonly int[][] WestRight = { new[] { -2, 0 }, new[] { -2, -1 } };
+        private static readonly int[][] WestProx = { new[] { 1, 0 }, new[] { 1, -1 }, new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 } };
 
-        private static int[][][] NorthOffsets = { NorthFront, NorthLeft, NorthRight, NorthProx };
-        private static int[][][] WestOffsets = { WestFront, WestLeft, WestRight, WestProx };
+        private static readonly int[][][] NorthOffsets = { NorthFront, NorthLeft, NorthRight, NorthProx };
+        private static readonly int[][][] WestOffsets = { WestFront, WestLeft, WestRight, WestProx };
 
 
         private Landscape()
@@ -101,77 +101,54 @@ namespace LifeSimulation
             {
                 var newPlant = Agent.CreatePlant();
                 Plants[plantIndex] = newPlant;
-                AddPlant(newPlant);
+                AddPlantOnPlane(newPlant);
             }
         }
 
-        public void RemovePlant(Agent plant)
+        public void RemovePlantFromPlane(Agent plant)
         {
-            _landscape[PLANT_PLANE][plant.Location.Y, plant.Location.X] = null;
+            _landscape[PlantPlane][plant.Location.Y, plant.Location.X] = null;
         }
 
-        /// <summary>
-        /// Add plant in random place of landscape
-        /// </summary>
-        /// <remarks>
-        /// In original codes named GrowPlant
-        /// </remarks>
-        public void AddPlant(Agent plant)
+        public void AddPlantOnPlane(Agent plant)
         {
-            while (true)
-            {
-                var x = Rand.GetRand(MaxGrid);
-                var y = Rand.GetRand(MaxGrid);
-
-                if (_landscape[PLANT_PLANE][y, x] == null)
-                {
-                    plant.Location.X = x;
-                    plant.Location.Y = y;
-                    _landscape[PLANT_PLANE][y, x] = plant;
-
-                    break;
-                }
-            }
+            var agentLocation = FindEmptySpot(PlantPlane);
+            plant.Location = agentLocation;
+            _landscape[PlantPlane][agentLocation.Y, agentLocation.X] = plant;
         }
 
         private void FindEmptySpotAndFill(Agent agent)
         {
-            agent.Location.X = -1;
-            agent.Location.Y = -1;
-
-            do
-            {
-                agent.Location.X = Rand.GetRand(MaxGrid);
-                agent.Location.Y = Rand.GetRand(MaxGrid);
-            } while (_landscape[(int)agent.Type][agent.Location.Y, agent.Location.X] != null);
+            agent.Location = FindEmptySpot((int)agent.Type);
 
             agent.Direction = (Direction)Rand.GetRand(MaxDirection);
             SetAgentInPosition(agent);
         }
 
-        /// <summary>
-        /// Find plant in specified position
-        /// </summary>
-        /// <returns>
-        /// Return finded plant, otherwise - null
-        /// </returns>
+        private Location FindEmptySpot(int planeIndex)
+        {
+            int x = 0;
+            int y = 0;
+            do
+            {
+                x = Rand.GetRand(MaxGrid);
+                y = Rand.GetRand(MaxGrid);
+            } while (_landscape[planeIndex][y, x] != null);
+
+            return new Location(x, y);
+        }
+
         public Agent FindPlant(int x, int y)
         {
-            return _landscape[PLANT_PLANE][y, x];
+            return _landscape[PlantPlane][y, x];
         }
 
-        /// <summary>
-        /// Find plant in specified position
-        /// </summary>
-        /// <returns>
-        /// Return finded plant, otherwise - null
-        /// </returns>
         public Agent FindHerbivore(int x, int y)
         {
-            return _landscape[HERB_PLANE][y, x];
+            return _landscape[HerbivorePlane][y, x];
         }
 
-        public void RemoveAgent(Agent agent)
+        public void RemoveAgentFromPlane(Agent agent)
         {
             var type = (int)agent.Type;
             _landscape[type][agent.Location.Y, agent.Location.X] = null;
@@ -186,13 +163,13 @@ namespace LifeSimulation
 
         public void SetPlantToPosition(Agent plant)
         {
-            _landscape[PLANT_PLANE][plant.Location.Y, plant.Location.X] = plant;
+            _landscape[PlantPlane][plant.Location.Y, plant.Location.X] = plant;
         }
 
         public void Move(Agent agent)
         {
             // Удаляем агента со старого места
-            RemoveAgent(agent);
+            RemoveAgentFromPlane(agent);
 
             // Обновляем координаты агента
             var direction = (int)agent.Direction;
@@ -254,13 +231,13 @@ namespace LifeSimulation
             int plane = 0;
             if (agent.Type == AgentType.Carnivore)
             {
-                plane = Landscape.HERB_PLANE;
+                plane = Landscape.HerbivorePlane;
             }
             else
             {
                 if (agent.Type == AgentType.Herbivore)
                 {
-                    plane = Landscape.PLANT_PLANE;
+                    plane = Landscape.PlantPlane;
                 }
             }
 
@@ -288,11 +265,13 @@ namespace LifeSimulation
             return isObjectChoosen;
         }
 
-
+        /// <summary>
+        /// Убиваем агента
+        /// (Пришла смерть или агента съели)
+        /// </summary>
         public void KillAgent(Agent agent)
         {
-            // Пришла смерть (или агента съели)
-            Statistics.CheckMaxAge(agent);
+            Statistics.UpdateMaxAge(agent);
 
             int agentIndex = 0;
             for (; agentIndex < Agents.Length; agentIndex++)
@@ -309,7 +288,7 @@ namespace LifeSimulation
             }
 
             Agents[agentIndex] = null;
-            RemoveAgent(agent);
+            RemoveAgentFromPlane(agent);
             Statistics.AgentTypeCounts[agent.Type]--;
             Statistics.AgentTypeDeathes[agent.Type]++;
         }
@@ -341,7 +320,7 @@ namespace LifeSimulation
             Agents[emptyAgentIndex] = child;
             FindEmptySpotAndFill(child);
 
-            Statistics.CheckMaxGen(child);
+            Statistics.UpdateMaxGen(child);
             Statistics.AgentTypeCounts[child.Type]++;
             Statistics.AgentTypeReproductions[child.Type]++;
         }
@@ -394,10 +373,10 @@ namespace LifeSimulation
 
         private void PerceptAll(Agent agent, int[][][] offsets, int neg)
         {
-            Percept(agent, SensorInputOffsets.HERB_FRONT, offsets[0], neg);
-            Percept(agent, SensorInputOffsets.HERB_LEFT, offsets[1], neg);
-            Percept(agent, SensorInputOffsets.HERB_RIGTH, offsets[2], neg);
-            Percept(agent, SensorInputOffsets.HERB_PROXIMITY, offsets[3], neg);
+            Percept(agent, SensorInputOffsets.HerbivoreFront, offsets[0], neg);
+            Percept(agent, SensorInputOffsets.HerbivoreLeft, offsets[1], neg);
+            Percept(agent, SensorInputOffsets.HerbivoreRight, offsets[2], neg);
+            Percept(agent, SensorInputOffsets.HerbivoreProximity, offsets[3], neg);
         }
     }
 }

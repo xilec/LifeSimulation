@@ -29,7 +29,7 @@ namespace LifeSimulation
             {AgentType.Herbivore, 0},
         };
 
-        public void CheckMaxGen(Agent agent)
+        public void UpdateMaxGen(Agent agent)
         {
             Agent maxGenAgent;
             if (!_agentsMaxGen.TryGetValue(agent.Type, out maxGenAgent))
@@ -51,7 +51,7 @@ namespace LifeSimulation
             return agent;
         }
 
-        public void CheckMaxAge(Agent agent)
+        public void UpdateMaxAge(Agent agent)
         {
             Agent maxAgeAgent;
             if (!_agentsMaxAge.TryGetValue(agent.Type, out maxAgeAgent))
