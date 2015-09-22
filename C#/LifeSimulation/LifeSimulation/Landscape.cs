@@ -15,7 +15,7 @@ namespace LifeSimulation
         public const int MaxAgents = 36;
         public const int MaxPlants = 35;
 
-        private Agent[][,] _landscape = { new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid] };
+        private readonly Agent[][,] _landscape = { new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid], new Agent[MaxGrid, MaxGrid] };
 
         public Agent[] Agents = new Agent[MaxAgents];
         public Agent[] Plants = new Agent[MaxPlants];
@@ -25,24 +25,21 @@ namespace LifeSimulation
         /// <summary>
         /// Направления движения в координатной сетке
         /// </summary>
-        /// <remarks>
-        /// Первая координата смещения - y, вторая - x
-        /// </remarks>
-        private static readonly int[][] Offsets = { new[] { -1, 0 }, new[] { 1, 0 }, new[] { 0, 1 }, new[] { 0, -1 } };
+        private static readonly Offset[] Offsets = { new Offset(-1, 0), new Offset(1, 0), new Offset(0, 1), new Offset(0, -1) };
 
         // Смещения координат для суммирования объектов в поле зрения агента
-        private static readonly int[][] NorthFront = { new[] { -2, -2 }, new[] { -2, -1 }, new[] { -2, 0 }, new[] { -2, 1 }, new[] { -2, 2 } };
-        private static readonly int[][] NorthLeft = { new[] { 0, -2 }, new[] { -1, -2 } };
-        private static readonly int[][] NorthRight = { new[] { 0, 2 }, new[] { -1, 2 } };
-        private static readonly int[][] NorthProx = { new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 }, new[] { -1, 1 }, new[] { 0, 1 } };
+        private static readonly Offset[] NorthFront = { new Offset(-2, -2), new Offset(-2, -1), new Offset(-2, 0), new Offset(-2, 1), new Offset(-2, 2) };
+        private static readonly Offset[] NorthLeft = { new Offset(0, -2), new Offset(-1, -2) };
+        private static readonly Offset[] NorthRight = { new Offset(0, 2), new Offset(-1, 2) };
+        private static readonly Offset[] NorthProx = { new Offset(0, -1), new Offset(-1, -1), new Offset(-1, 0), new Offset(-1, 1), new Offset(0, 1) };
 
-        private static readonly int[][] WestFront = { new[] { 2, -2 }, new[] { 1, -2 }, new[] { 0, -2 }, new[] { -1, -2 }, new[] { -2, -2 } };
-        private static readonly int[][] WestLeft = { new[] { 2, 0 }, new[] { 2, -1 } };
-        private static readonly int[][] WestRight = { new[] { -2, 0 }, new[] { -2, -1 } };
-        private static readonly int[][] WestProx = { new[] { 1, 0 }, new[] { 1, -1 }, new[] { 0, -1 }, new[] { -1, -1 }, new[] { -1, 0 } };
+        private static readonly Offset[] WestFront = { new Offset(2, -2), new Offset(1, -2), new Offset(0, -2), new Offset(-1, -2), new Offset(-2, -2) };
+        private static readonly Offset[] WestLeft = { new Offset(2, 0), new Offset(2, -1) };
+        private static readonly Offset[] WestRight = { new Offset(-2, 0), new Offset(-2, -1) };
+        private static readonly Offset[] WestProx = { new Offset(1, 0), new Offset(1, -1), new Offset(0, -1), new Offset(-1, -1), new Offset(-1, 0) };
 
-        private static readonly int[][][] NorthOffsets = { NorthFront, NorthLeft, NorthRight, NorthProx };
-        private static readonly int[][][] WestOffsets = { WestFront, WestLeft, WestRight, WestProx };
+        private static readonly Offset[][] NorthOffsets = { NorthFront, NorthLeft, NorthRight, NorthProx };
+        private static readonly Offset[][] WestOffsets = { WestFront, WestLeft, WestRight, WestProx };
 
 
         private Landscape()
@@ -173,8 +170,9 @@ namespace LifeSimulation
 
             // Обновляем координаты агента
             var direction = (int)agent.Direction;
-            agent.Location.X = Clip(agent.Location.X + Offsets[direction][1]);
-            agent.Location.Y = Clip(agent.Location.Y + Offsets[direction][0]);
+            var offset = Offsets[direction];
+            agent.Location.X = Clip(agent.Location.X + offset.Dx);
+            agent.Location.Y = Clip(agent.Location.Y + offset.Dy);
             SetAgentInPosition(agent);
         }
 
@@ -200,15 +198,15 @@ namespace LifeSimulation
             return newPosition;
         }
 
-        private bool ChooseObject(int plane, Location location, int[][] offsets, int neg, out int ox, out int oy)
+        private bool ChooseObject(int plane, Location location, Offset[] offsets, int neg, out int ox, out int oy)
         {
             var ax = location.X;
             var ay = location.Y;
 
             foreach (var offset in offsets)
             {
-                var xOffset = Clip(ax + (offset[1] * neg));
-                var yOffset = Clip(ay + (offset[0] * neg));
+                var xOffset = Clip(ax + (offset.Dx * neg));
+                var yOffset = Clip(ay + (offset.Dy * neg));
 
                 // Если объект найден, возвращаем его индекс
                 if (_landscape[plane][yOffset, xOffset] != null)
@@ -325,31 +323,6 @@ namespace LifeSimulation
             Statistics.AgentTypeReproductions[child.Type]++;
         }
 
-        private void Percept(Agent agent, SensorInputOffsets sensorInputOffset, int[][] offsets, int neg)
-        {
-            var agentLocation = agent.Location;
-            var inputOffset = (int)sensorInputOffset;
-
-            for (int planeIndex = 0; planeIndex < _landscape.Length; planeIndex++)
-            {
-                var plane = _landscape[planeIndex];
-                agent.Inputs[inputOffset + planeIndex] = 0;
-
-                foreach (var offset in offsets)
-                {
-                    var xoff = Clip(agentLocation.X + (offset[1]*neg));
-                    var yoff = Clip(agentLocation.Y + (offset[0]*neg));
-
-                    // Если в полученной точке что-то есть, то увеличиваем счетчик входов
-                    var agentOnPlane = plane[yoff, xoff];
-                    if (agentOnPlane != null && agentOnPlane != agent)
-                    {
-                        agent.Inputs[inputOffset + planeIndex]++;
-                    }
-                }
-            }
-        }
-
         public void UpdatePerception(Agent agent)
         {
             switch (agent.Direction)
@@ -371,12 +344,37 @@ namespace LifeSimulation
             }
         }
 
-        private void PerceptAll(Agent agent, int[][][] offsets, int neg)
+        private void PerceptAll(Agent agent, Offset[][] offsets, int neg)
         {
             Percept(agent, SensorInputOffsets.HerbivoreFront, offsets[0], neg);
             Percept(agent, SensorInputOffsets.HerbivoreLeft, offsets[1], neg);
             Percept(agent, SensorInputOffsets.HerbivoreRight, offsets[2], neg);
             Percept(agent, SensorInputOffsets.HerbivoreProximity, offsets[3], neg);
+        }
+
+        private void Percept(Agent agent, SensorInputOffsets sensorInputOffset, Offset[] offsets, int neg)
+        {
+            var agentLocation = agent.Location;
+            var inputOffset = (int)sensorInputOffset;
+
+            for (int planeIndex = 0; planeIndex < _landscape.Length; planeIndex++)
+            {
+                var plane = _landscape[planeIndex];
+                agent.Inputs[inputOffset + planeIndex] = 0;
+
+                foreach (var offset in offsets)
+                {
+                    var xoff = Clip(agentLocation.X + (offset.Dx*neg));
+                    var yoff = Clip(agentLocation.Y + (offset.Dy*neg));
+
+                    // Если в полученной точке что-то есть, то увеличиваем счетчик входов
+                    var agentOnPlane = plane[yoff, xoff];
+                    if (agentOnPlane != null && agentOnPlane != agent)
+                    {
+                        agent.Inputs[inputOffset + planeIndex]++;
+                    }
+                }
+            }
         }
     }
 }

@@ -46,6 +46,7 @@
     <Compile Include="AgentAction.cs" />
     <Compile Include="AgentType.cs" />
     <Compile Include="Direction.cs" />
+    <Compile Include="Offset.cs" />
     <Compile Include="Rand.cs" />
     <Compile Include="Landscape.cs" />
     <Compile Include="Location.cs" />
