@@ -11,18 +11,18 @@ namespace LifeSimulation
             _rand = new Random(seed);
         }
 
-        public static double GetSRand()
+        internal static double GetSRand()
         {
             return _rand.NextDouble();
         }
 
-        public static int GetRand(int max)
+        internal static int GetRand(int max)
         {
             return _rand.Next(max);
         }
 
         // Возвращает значения, которые могут принимать веса нейронной сети
-        public static int GetWeight()
+        internal static int GetWeight()
         {
             return GetRand(10) - 6;
         }

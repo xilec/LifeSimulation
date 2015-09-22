@@ -9,10 +9,11 @@ namespace LifeSimulation
         public const int MaxAgents = 36;
         public const int MaxPlants = 35;
 
-        public const int DirectionsCount = 4;
+        private const int DirectionsCount = 4;
 
-        public const int HerbivorePlane = 0;
-        public const int CarnivorePlane = 1;
+        private const int HerbivorePlane = 0;
+        private const int CarnivorePlane = 1;
+        private const int PlantPlane = 2;
 
         private readonly Plant[,] _plantLandscape = new Plant[GridSize, GridSize];
         private readonly Agent[][,] _agentLandscapes = { new Agent[GridSize, GridSize], new Agent[GridSize, GridSize] };
@@ -21,7 +22,9 @@ namespace LifeSimulation
         public Plant[] Plants = new Plant[MaxPlants];
         private readonly ISimulationObject[][,] _allLandscapes;
 
-        public Statistics Statistics = new Statistics();
+        private const double ReproduceEnergyFactor = 0.8;
+        
+        public readonly Statistics Statistics = new Statistics();
 
         /// <summary>
         /// Направления движения в координатной сетке
@@ -62,7 +65,7 @@ namespace LifeSimulation
             return landscape;
         }
 
-        public static Landscape CreateTest()
+        public static Landscape CreateForTest()
         {
             return new Landscape();
         }
@@ -104,16 +107,16 @@ namespace LifeSimulation
             }
         }
 
-        public void RemovePlantFromPlane(Plant plant)
-        {
-            _plantLandscape[plant.Location.Y, plant.Location.X] = null;
-        }
-
-        public void AddPlantOnPlane(Plant plant)
+        private void AddPlantOnPlane(Plant plant)
         {
             var agentLocation = FindEmptySpot(_plantLandscape);
             plant.Location = agentLocation;
             _plantLandscape[agentLocation.Y, agentLocation.X] = plant;
+        }
+
+        private void RemovePlantFromPlane(Plant plant)
+        {
+            _plantLandscape[plant.Location.Y, plant.Location.X] = null;
         }
 
         private void FindEmptySpotAndFill(Agent agent)
@@ -124,7 +127,7 @@ namespace LifeSimulation
             SetAgentInPosition(agent);
         }
 
-        private static Location FindEmptySpot(ISimulationObject[,] grid)
+        private static Location FindEmptySpot(ISimulationObject[,] plane)
         {
             int x = 0;
             int y = 0;
@@ -132,40 +135,45 @@ namespace LifeSimulation
             {
                 x = Rand.GetRand(GridSize);
                 y = Rand.GetRand(GridSize);
-            } while (grid[y, x] != null);
+            } while (plane[y, x] != null);
 
             return new Location(x, y);
         }
 
-        public Plant FindPlant(int x, int y)
+        private Plant FindPlant(int x, int y)
         {
             return _plantLandscape[y, x];
         }
 
-        public Agent FindHerbivore(int x, int y)
+        private Agent[,] GetHerbivorePlane()
         {
-            return _agentLandscapes[HerbivorePlane][y, x];
+            return _agentLandscapes[HerbivorePlane];
         }
 
-        public void RemoveAgentFromPlane(Agent agent)
+        private Agent FindHerbivore(int x, int y)
+        {
+            return GetHerbivorePlane()[y, x];
+        }
+
+        private void RemoveAgentFromPlane(Agent agent)
         {
             var type = (int)agent.Type;
             _agentLandscapes[type][agent.Location.Y, agent.Location.X] = null;
         }
 
-        public void SetAgentInPosition(Agent agent)
+        internal void SetAgentInPosition(Agent agent)
         {
             // Помещаем агента в новое место
             var type = (int)agent.Type;
             _agentLandscapes[type][agent.Location.Y, agent.Location.X] = agent;
         }
 
-        public void SetPlantToPosition(Plant plant)
+        internal void SetPlantToPosition(Plant plant)
         {
             _plantLandscape[plant.Location.Y, plant.Location.X] = plant;
         }
 
-        public void Move(Agent agent)
+        private void Move(Agent agent)
         {
             // Удаляем агента со старого места
             RemoveAgentFromPlane(agent);
@@ -199,7 +207,7 @@ namespace LifeSimulation
             return newPosition;
         }
 
-        private bool ChooseObject(ISimulationObject[,]plane, Location location, Offset[] offsets, int neg, out int ox, out int oy)
+        private bool ChooseVictim(ISimulationObject[,]plane, Location location, Offset[] offsets, int neg, out int ox, out int oy)
         {
             var ax = location.X;
             var ay = location.Y;
@@ -224,7 +232,7 @@ namespace LifeSimulation
             return false;
         }
 
-        internal bool ChooseVictim(Agent agent, out int ox, out int oy)
+        private bool ChooseVictim(Agent agent, out int ox, out int oy)
         {
             // Сначала определяем слой, объект в котором будет съеден
             ISimulationObject[,] plane;
@@ -234,7 +242,7 @@ namespace LifeSimulation
                     plane = _plantLandscape;
                     break;
                 case AgentType.Carnivore:
-                    plane = _agentLandscapes[HerbivorePlane];
+                    plane = GetHerbivorePlane();
                     break;
                 default:
                     throw new ArgumentException("Only herbivore and carnivore can eat");
@@ -247,16 +255,16 @@ namespace LifeSimulation
             switch (agent.Direction)
             {
                 case Direction.North:
-                    isObjectChoosen = ChooseObject(plane, location, NorthProx, 1, out ox, out oy);
+                    isObjectChoosen = ChooseVictim(plane, location, NorthProx, 1, out ox, out oy);
                     break;
                 case Direction.South:
-                    isObjectChoosen = ChooseObject(plane, location, NorthProx, -1, out ox, out oy);
+                    isObjectChoosen = ChooseVictim(plane, location, NorthProx, -1, out ox, out oy);
                     break;
                 case Direction.West:
-                    isObjectChoosen = ChooseObject(plane, location, WestProx, 1, out ox, out oy);
+                    isObjectChoosen = ChooseVictim(plane, location, WestProx, 1, out ox, out oy);
                     break;
                 case Direction.East:
-                    isObjectChoosen = ChooseObject(plane, location, WestProx, -1, out ox, out oy);
+                    isObjectChoosen = ChooseVictim(plane, location, WestProx, -1, out ox, out oy);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -268,7 +276,7 @@ namespace LifeSimulation
         /// Убиваем агента
         /// (Пришла смерть или агента съели)
         /// </summary>
-        public void KillAgent(Agent agent)
+        private void KillAgent(Agent agent)
         {
             Statistics.UpdateMaxAge(agent);
 
@@ -292,7 +300,7 @@ namespace LifeSimulation
             Statistics.AgentTypeDeathes[agent.Type]++;
         }
 
-        public void ReproduceAgent(Agent agent)
+        private void ReproduceAgent(Agent agent)
         {
             // Не даем агенту одного типа занять более половины дотупных ячеек
             if (Statistics.AgentTypeCounts[agent.Type] >= MaxAgents / 2)
@@ -324,7 +332,7 @@ namespace LifeSimulation
             Statistics.AgentTypeReproductions[child.Type]++;
         }
 
-        public void UpdatePerception(Agent agent)
+        internal void UpdatePerception(Agent agent)
         {
             switch (agent.Direction)
             {
@@ -366,16 +374,101 @@ namespace LifeSimulation
 
                 foreach (var offset in preceptionArea)
                 {
-                    var xoff = Clip(agentLocation.X + (offset.Dx*neg));
-                    var yoff = Clip(agentLocation.Y + (offset.Dy*neg));
+                    var x = Clip(agentLocation.X + (offset.Dx*neg));
+                    var y = Clip(agentLocation.Y + (offset.Dy*neg));
 
                     // Если в полученной точке что-то есть, то увеличиваем счетчик входов
-                    var agentOnPlane = plane[yoff, xoff];
+                    var agentOnPlane = plane[y, x];
                     if (agentOnPlane != null && agentOnPlane != agent)
                     {
                         agent.Inputs[inputOffset + planeIndex]++;
                     }
                 }
+            }
+        }
+
+        private void Eat(Agent agent)
+        {
+            int ox;
+            int oy;
+            var isObjectChoosen = ChooseVictim(agent, out ox, out oy);
+
+            // Объект нашли - съедаем его!
+            if (!isObjectChoosen)
+            {
+                return;
+            }
+
+            switch (agent.Type)
+            {
+                case AgentType.Herbivore:
+                    var findedPlant = FindPlant(ox, oy);
+
+                    // Если растение найдено, то удаляем его и сажаем в другом месте новое
+                    if (findedPlant != null)
+                    {
+                        agent.Eat();
+
+                        RemovePlantFromPlane(findedPlant);
+                        AddPlantOnPlane(findedPlant);
+                    }
+
+                    break;
+
+                case AgentType.Carnivore:
+                    // Найти травоядное в списке агентов (по его позиции)
+                    var findedHerbivore = FindHerbivore(ox, oy);
+
+                    // Если нашли, то удаляем агента
+                    if (findedHerbivore != null)
+                    {
+                        agent.Eat();
+
+                        KillAgent(findedHerbivore);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        internal void UpdateAgentsState(Agent agent)
+        {
+            switch (agent.Action)
+            {
+                case AgentAction.TurnLeft:
+                case AgentAction.TurnRight:
+                    agent.Turn();
+                    break;
+                case AgentAction.Move:
+                    Move(agent);
+                    break;
+                case AgentAction.Eat:
+                    Eat(agent);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            // Вычитаем "потраченную" энергию
+            agent.EnergyUpdateOnTurn();
+
+            // Если агент имеет достаточно энергии для размножения, то позволяем ему сделать это
+            if (agent.Energy > ReproduceEnergyFactor * Agent.MaxEnergy)
+            {
+                ReproduceAgent(agent);
+            }
+
+            // Если энергия агента меньше или равна нулю - агент умирает
+            // В противом случае проверяем, чне является ли этот агент самым старым
+            if (agent.Energy <= 0)
+            {
+                KillAgent(agent);
+            }
+            else
+            {
+                agent.Age++;
+                Statistics.UpdateMaxGen(agent);
             }
         }
     }

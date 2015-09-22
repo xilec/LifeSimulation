@@ -1,6 +1,6 @@
 ﻿namespace Visualizer.ViewModels
 {
-    public enum VisualAgentType
+    internal enum VisualAgentType
     {
         None,
         Plant,

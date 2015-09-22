@@ -2,7 +2,7 @@
 
 namespace Visualizer.ViewModels
 {
-    public class AgentStatisticsViewModel : ViewModelBase
+    internal class AgentStatisticsViewModel : ViewModelBase
     {
         private int _count;
         private int _reproductions;

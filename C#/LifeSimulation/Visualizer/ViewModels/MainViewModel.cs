@@ -16,7 +16,7 @@ using ViewModelBase = Visualizer.CommonWpf.ViewModelBase;
 
 namespace Visualizer.ViewModels
 {
-    public class MainViewModel : ViewModelBase
+    internal class MainViewModel : ViewModelBase
     {
         private const int SimulationIterationCount = 50000;
         private OptimizedFastObservableCollection<AgeViewModel> _ages;
@@ -26,7 +26,7 @@ namespace Visualizer.ViewModels
         private int[] _verticalCoordinates;
         private Simulation _simulation;
         private INotifyTaskCompletion _simulationComplition;
-        private Dispatcher _currentDispatcher = Application.Current.Dispatcher;
+        private readonly Dispatcher _currentDispatcher = Application.Current.Dispatcher;
 
         /// <summary>
         /// Contstructor for designer

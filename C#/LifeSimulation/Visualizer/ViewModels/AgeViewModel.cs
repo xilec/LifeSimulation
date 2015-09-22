@@ -8,7 +8,7 @@ using Visualizer.CommonWpf;
 
 namespace Visualizer.ViewModels
 {
-    public class AgeViewModel : ViewModelBase
+    internal class AgeViewModel : ViewModelBase
     {
         private readonly string _serializedLandscape;
         private int _number;

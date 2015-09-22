@@ -7,11 +7,11 @@ using ViewModelBase = Visualizer.CommonWpf.ViewModelBase;
 
 namespace Visualizer.ViewModels
 {
-    public class AgentBrainViewModel : ViewModelBase
+    internal class AgentBrainViewModel : ViewModelBase
     {
         private readonly Agent _agent;
 
-        public AgentBrainViewModel(Agent agent)
+        internal AgentBrainViewModel(Agent agent)
         {
             _agent = agent;
         }
@@ -83,7 +83,7 @@ namespace Visualizer.ViewModels
         }
     }
 
-    public class DesignAgentBrainViewModel : AgentBrainViewModel
+    internal class DesignAgentBrainViewModel : AgentBrainViewModel
     {
         public DesignAgentBrainViewModel() : base(CreateDesignAgent())
         {

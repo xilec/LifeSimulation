@@ -8,7 +8,7 @@ using ViewModelBase = Visualizer.CommonWpf.ViewModelBase;
 
 namespace Visualizer.ViewModels
 {
-    public class AgentViewModel : ViewModelBase
+    internal class AgentViewModel : ViewModelBase
     {
         private VisualAgentType _type;
         private readonly Agent _agent;

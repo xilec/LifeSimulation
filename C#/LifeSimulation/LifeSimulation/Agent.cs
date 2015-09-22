@@ -98,7 +98,7 @@ namespace LifeSimulation
             }
         }
 
-        public Agent BornChild()
+        internal Agent BornChild()
         {
             var child = DeepClone();
             child.Name = CreateName(Type);
@@ -116,6 +116,11 @@ namespace LifeSimulation
             return child;
         }
 
+        internal void EnergyUpdateOnTurn()
+        {
+            Energy -= Type == AgentType.Herbivore ? 2 : 1;
+        }
+
         public Agent DeepClone()
         {
             var result = (Agent)MemberwiseClone();
@@ -127,7 +132,7 @@ namespace LifeSimulation
             return result;
         }
 
-        public void MakeDecision()
+        internal void MakeDecision()
         {
             // Вычисление в сети
             for (int outIndex = 0; outIndex < MaxOutputs; outIndex++)

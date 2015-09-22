@@ -3,19 +3,19 @@ using Catel.Collections;
 
 namespace Visualizer.CommonWpf
 {
-    public class OptimizedFastObservableCollection<T> : FastObservableCollection<T>
+    internal class OptimizedFastObservableCollection<T> : FastObservableCollection<T>
     {
-        public OptimizedFastObservableCollection() : base()
+        internal OptimizedFastObservableCollection() : base()
         {            
         }
 
-        public OptimizedFastObservableCollection(int capacity)
+        internal OptimizedFastObservableCollection(int capacity)
         {
             var list = Items as List<T>;
             list.Capacity = capacity;
         }
 
-        public OptimizedFastObservableCollection(IEnumerable<T> collection) : base(collection)
+        internal OptimizedFastObservableCollection(IEnumerable<T> collection) : base(collection)
         {
         }
     }

@@ -4,7 +4,7 @@ using Visualizer.Annotations;
 
 namespace Visualizer.CommonWpf
 {
-    public abstract class ViewModelBase : INotifyPropertyChanged
+    internal abstract class ViewModelBase : INotifyPropertyChanged
     {
         public virtual event PropertyChangedEventHandler PropertyChanged;
 

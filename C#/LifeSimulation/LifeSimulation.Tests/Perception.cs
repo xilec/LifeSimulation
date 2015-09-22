@@ -11,7 +11,7 @@ namespace LifeSimulation.Tests
         {
             var expectedInputs = TrainingCamp.CreateInputs();
 
-            var landscape = Landscape.CreateTest();
+            var landscape = Landscape.CreateForTest();
             
             var agent = new Agent(AgentType.Herbivore);
             agent.Location = new Location(10, 10);
@@ -29,7 +29,7 @@ namespace LifeSimulation.Tests
             var expectedCarnivoreInputs = TrainingCamp.CreateInputs(herbivoresOnFront: 1);
             var expectedHerbivoreInputs = TrainingCamp.CreateInputs(carnivoresOnFront: 1);
 
-            var landscape = Landscape.CreateTest();
+            var landscape = Landscape.CreateForTest();
 
             var herbivore = new Agent(AgentType.Herbivore);
             herbivore.Direction = Direction.East;
@@ -55,7 +55,7 @@ namespace LifeSimulation.Tests
         {
             var expectedCarnivoreInputs = TrainingCamp.CreateInputs(plantsOnProximity: 1);
 
-            var landscape = Landscape.CreateTest();
+            var landscape = Landscape.CreateForTest();
 
             var carnivore = new Agent(AgentType.Carnivore);
             carnivore.Direction = Direction.East;
