@@ -122,7 +122,7 @@ namespace LifeSimulation
         {
             int ox;
             int oy;
-            var isObjectChoosen = Landscape.ChooseObject(agent, out ox, out oy);
+            var isObjectChoosen = Landscape.ChooseVictim(agent, out ox, out oy);
 
             // Объект нашли - съедаем его!
             if (!isObjectChoosen)

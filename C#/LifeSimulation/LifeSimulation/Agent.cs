@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace LifeSimulation
 {
     [DebuggerDisplay("{Name} X = {Location.X} Y = {Location.Y}")]
-    public class Agent
+    public class Agent : ISimulationObject
     {
         private const int MaxFoodEnergy = 110;
         public const int MaxEnergy = 200;
@@ -58,7 +58,7 @@ namespace LifeSimulation
         public int Parent;
         public int Age;
         public int Generation;
-        public Location Location;
+        public Location Location { get; set; }
         public Direction Direction;
         public int[] Inputs = new int[MaxInputs];
         public int[] WeightOI = new int[TotalWeights];
@@ -125,11 +125,6 @@ namespace LifeSimulation
             result.Outputs = (int[])Outputs.Clone();
 
             return result;
-        }
-
-        public static Agent CreatePlant()
-        {
-            return new Agent();
         }
 
         public void MakeDecision()

@@ -63,7 +63,7 @@ namespace LifeSimulation.Tests
             landscape.Agents[0] = carnivore;
             landscape.SetAgentInPosition(carnivore);
 
-            var plant = Agent.CreatePlant();
+            var plant = new Plant();
             plant.Location = new Location(1, 3);
             landscape.Plants[0] = plant;
             landscape.SetPlantToPosition(plant);

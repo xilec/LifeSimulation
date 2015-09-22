@@ -127,9 +127,9 @@ namespace Visualizer.ViewModels
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetCellIndex(Agent agent, int columns)
+        public static int GetCellIndex(ISimulationObject simulationObject, int columns)
         {
-            var location = agent.Location;
+            var location = simulationObject.Location;
             var cellIndex = columns * location.Y + location.X;
             return cellIndex;
         }
